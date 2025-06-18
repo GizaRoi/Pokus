@@ -1,4 +1,4 @@
-package com.mobicom.mco.pokus.ui.theme
+package com.mobicom.mco.pokus.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
