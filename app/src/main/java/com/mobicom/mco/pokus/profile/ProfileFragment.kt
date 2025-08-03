@@ -29,11 +29,9 @@ class ProfileFragment : Fragment() {
         view.findViewById<TextView>(R.id.bio).text = MainActivity.currentBio
         view.findViewById<TextView>(R.id.link).text = MainActivity.currentLink
 
-        view.findViewById<ImageView>(R.id.settingsIcon).setOnClickListener {
-            val intent = Intent(requireContext(), EditProfileActivity::class.java)
-            startActivity(intent)
-        }
+        // view.findViewById<ImageView>(R.id.settingsIcon).setOnClickListener {
+            // val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            // startActivity(intent)
+        //}
     }
-
-
 }
