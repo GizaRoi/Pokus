@@ -54,7 +54,6 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // FirebaseApp.initializeApp(this) // Typically handled by FirebaseInitProvider
 
         Log.d(TAG, "Activity created. Firebase current user: ${firebaseAuth.currentUser?.uid}")
         setContentView(R.layout.activity_login)

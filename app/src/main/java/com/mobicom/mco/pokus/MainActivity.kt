@@ -1,9 +1,13 @@
 package com.mobicom.mco.pokus
 
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.mobicom.mco.pokus.databinding.ActivityMainBinding
 import com.mobicom.mco.pokus.home.HomeFragment
 import com.mobicom.mco.pokus.search.SearchFragment
@@ -17,6 +21,8 @@ import com.mobicom.mco.pokus.todo.TodoItem
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
 
     companion object {
 
@@ -26,12 +32,13 @@ class MainActivity : AppCompatActivity() {
         const val KEY_NAME = "name"
         const val KEY_BIO = "bio"
         const val KEY_LINK = "link"
+        const val KEY_PFP = "pfpURL"
 
         var currentUsername = "reever"
         var currentBio: String = "CS student trying to survive finals. Focused on mobile development and AI. Let's get this bread!"
         var currentLink: String = "instagram.com/roimark"
-
-        var currentProfilePicRes = R.drawable.profile_pic
+        var currentProfilePictureUrl: String = "panda"
+        var currentProfilePictureRes: Int = R.drawable.ic_default_profile
         val currentDate = "A day ago"
         val currentTitle = "Welcome Back!"
         val currentContent = "Your latest updates are shown here."
@@ -45,30 +52,28 @@ class MainActivity : AppCompatActivity() {
                 date = currentDate,
                 title = currentTitle,
                 content = currentContent,
-                imageResId = currentProfilePicRes,
+                imageResId = currentProfilePictureRes,
                 timeSpent = currentTimeSpent,
                 todoList = currentTodoList,
                 comments = currentComments
             )
 
         val dummyPosts = listOf(dummyPost, dummyPost, dummyPost)
-
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        currentUsername = prefs.getString(KEY_NAME, currentUsername) ?: currentUsername
-        currentBio = prefs.getString(KEY_BIO, currentBio) ?: currentBio
-        currentLink = prefs.getString(KEY_LINK, currentLink) ?: currentLink
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
+        fetchUserData()
 
         // Default fragment* to change later with log in
         loadFragment(HomeFragment())
-
+        setContentView(binding.root)
         binding.bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> loadFragment(HomeFragment())
@@ -79,6 +84,36 @@ class MainActivity : AppCompatActivity() {
 
             }
             true
+        }
+    }
+
+    private fun fetchUserData() {
+        val userId = firebaseAuth.currentUser?.email ?: return
+        firestore.collection("users").document(userId).get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    currentUsername = document.getString(KEY_NAME) ?: currentUsername
+                    currentBio = document.getString(KEY_BIO) ?: currentBio
+                    currentLink = document.getString(KEY_LINK) ?: currentLink
+                    currentProfilePictureUrl = document.getString(KEY_PFP) ?: "panda"
+                    currentProfilePictureRes = getDrawableIdByName(currentProfilePictureUrl)
+
+
+                } else {
+                    Log.d("MainActivity", "No such document")
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("MainActivity", "Get failed with ", exception)
+            }
+    }
+
+    private fun getDrawableIdByName(drawableName: String): Int {
+        return try {
+            // 'packageName' is available directly in an Activity
+            resources.getIdentifier(drawableName, "drawable", packageName)
+        } catch (e: Resources.NotFoundException) { // Though getIdentifier usually returns 0 instead of throwing
+            0 // Return 0 if not found
         }
     }
 
