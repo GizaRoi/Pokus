@@ -72,35 +72,69 @@
             android:text="Post content here"
             android:textSize="14sp" />
 
-        <!-- Post Image -->
-        <ImageView
-            android:id="@+id/postImage"
-            android:layout_width="match_parent"
-            android:layout_height="230dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/sample_pic"
-            android:contentDescription="@string/image_desc" />
+        <!-- Time Label -->
+        <TextView
+            android:id="@+id/timeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp" />
+
+        <!-- Duration Only -->
+        <TextView
+            android:id="@+id/timeSpent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1h 32m"
+            android:textSize="13sp" />
+
+        <!-- To-Do List Label -->
+        <TextView
+            android:id="@+id/todoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="To Do:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="2dp" />
+
+        <!-- To-Do Items -->
+        <TextView
+            android:id="@+id/todoList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="✔ Task A\n✔ Task B\n✔ Task C"
+            android:textSize="13sp" />
 
         <!-- Icons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="15dp"
             android:gravity="start"
             android:orientation="horizontal">
 
             <ImageView
+                android:id="@+id/likeButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/like"
-                android:contentDescription="@string/like" />
+                android:contentDescription="@string/like"
+                android:clickable="true"
+                android:focusable="true" />
 
             <ImageView
+                android:id="@+id/commentButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/comment"
-                android:contentDescription="@string/comment" />
+                android:contentDescription="@string/comment"
+                android:clickable="true"
+                android:focusable="true" />
 
             <ImageView
                 android:layout_width="24dp"
@@ -109,32 +143,15 @@
                 android:src="@drawable/share"
                 android:contentDescription="@string/share" />
         </LinearLayout>
-        <!-- Time Spent -->
-        <TextView
-            android:id="@+id/timeSpent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time: 1h 32m"
-            android:textSize="13sp"
-            android:layout_marginTop="8dp" />
 
-        <!-- To-Do List -->
-        <TextView
-            android:id="@+id/todoList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="✔ Task A\n✔ Task B\n✔ Task C"
-            android:textSize="13sp"
-            android:layout_marginTop="4dp" />
-
-        <!-- Comments -->
+        <!-- Comments with Usernames -->
         <TextView
             android:id="@+id/comments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You got this!\nProud of you 💪"
+            android:text="azeya: You got this!\nkath: Proud of you 💪"
             android:textSize="13sp"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="5dp" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

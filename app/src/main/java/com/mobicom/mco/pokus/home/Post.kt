@@ -5,8 +5,9 @@ data class Post(
     val date: String,
     val title: String,
     val content: String,
-    val imageResId: Int,
     val timeSpent: String,
     val todoList: List<String>,
-    val comments: List<String>
+    var isLiked: Boolean = false,
+    var commentUsernames: MutableList<String> = mutableListOf(),
+    var comments: MutableList<String> = mutableListOf()
 )
