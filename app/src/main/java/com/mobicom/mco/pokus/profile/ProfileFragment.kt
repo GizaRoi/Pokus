@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
+import android.content.Intent
 
 class ProfileFragment : Fragment() {
 
@@ -25,6 +26,14 @@ class ProfileFragment : Fragment() {
 
         // Access values directly from MainActivity companion object
         view.findViewById<TextView>(R.id.username).text = MainActivity.currentUsername
-        view.findViewById<ImageView>(R.id.profilePic).setImageResource(MainActivity.currentProfilePicRes)
+        view.findViewById<TextView>(R.id.bio).text = MainActivity.currentBio
+        view.findViewById<TextView>(R.id.link).text = MainActivity.currentLink
+
+        view.findViewById<ImageView>(R.id.settingsIcon).setOnClickListener {
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            startActivity(intent)
+        }
     }
+
+
 }

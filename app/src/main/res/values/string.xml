@@ -21,6 +21,8 @@
     <string name="search">Search</string>
     <string name="todo">To Do</string>
     <string name="sessions">Sessions</string>
+    <string name="account">Account</string>
+
 
     <string name="profile">Profile</string>
     <string name="profile_desc">Profile picture of the user</string>
