@@ -11,7 +11,6 @@
         android:layout_height="wrap_content"
         android:padding="24dp">
 
-        <!-- App Name -->
         <TextView
             android:id="@+id/appName"
             android:layout_width="wrap_content"
@@ -25,7 +24,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="48dp" />
 
-        <!-- Tagline -->
         <TextView
             android:id="@+id/tagline"
             android:layout_width="wrap_content"
@@ -38,7 +36,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" />
 
-        <!-- Username -->
         <EditText
             android:id="@+id/usernameField"
             android:layout_width="300dp"
@@ -54,7 +51,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="32dp" />
 
-        <!-- Email -->
         <EditText
             android:id="@+id/emailField"
             android:layout_width="300dp"
@@ -70,7 +66,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp" />
 
-        <!-- Password -->
         <EditText
             android:id="@+id/passwordField"
             android:layout_width="300dp"
@@ -86,9 +81,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp" />
 
-        <!-- Terms & Conditions -->
-
-        <!-- Create Account Button -->
         <CheckBox
             android:id="@+id/termsCheckbox"
             android:layout_width="300dp"
@@ -114,7 +106,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="24dp" />
 
-        <!-- Log In Text -->
         <LinearLayout
             android:id="@+id/loginRedirectLayout"
             android:layout_width="wrap_content"

@@ -12,7 +12,7 @@
     <string name="signup_prompt">Don’t have an account?</string>
     <string name="signup">Sign Up</string>
 
-    <string name="email">E-mail</string>
+    <string name="email">Email</string>
     <string name="terms_text">By clicking this box, you agree to the Terms and Conditions and Privacy Policy.</string>
     <string name="create_account">Create Account</string>
     <string name="login_prompt">Already have an account?</string>
