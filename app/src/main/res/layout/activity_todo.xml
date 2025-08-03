@@ -33,6 +33,7 @@
         android:layout_margin="24dp"
         android:src="@android:drawable/ic_input_add"
         android:contentDescription="Add To-Do"
-        app:backgroundTint="#1976D2" />
+        app:backgroundTint="@color/pokus_blue"
+        app:tint="@android:color/white" />
 
 </RelativeLayout>
