@@ -20,7 +20,7 @@ class EditProfileActivity : AppCompatActivity() {
         val schoolInput = findViewById<EditText>(R.id.inputSchool)
         val bioInput = findViewById<EditText>(R.id.inputBio)
         val linkInput = findViewById<EditText>(R.id.inputLink)
-        val saveText = findViewById<TextView>(R.id.changePhoto) // repurpose this as Save if needed
+        val saveText = findViewById<TextView>(R.id.btnSave)
         val backButton = findViewById<ImageView>(R.id.backEditIcon)
 
         // Optional: load current data
