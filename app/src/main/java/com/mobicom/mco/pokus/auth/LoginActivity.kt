@@ -35,6 +35,11 @@ import androidx.credentials.exceptions.GetCredentialInterruptedException
 import androidx.credentials.exceptions.GetCredentialUnknownException
 import androidx.credentials.exceptions.GetCredentialCustomException
 import androidx.credentials.exceptions.NoCredentialException
+import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class LoginActivity : AppCompatActivity() {
@@ -47,10 +52,13 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var signInButton: Button
     private lateinit var progressBar: ProgressBar // Assuming you have a ProgressBar with id "progressBar"
+    private lateinit var email: String
 
     companion object {
         private const val TAG = "LoginActivity"
     }
+
+    val db = FirebaseFirestore.getInstance()
 
     // ActivityResultLauncher for the One Tap UI
     private val oneTapSignInResultLauncher =
@@ -67,6 +75,7 @@ class LoginActivity : AppCompatActivity() {
                         // For now, just log and navigate
                         val displayName = credential.displayName
                         val email = credential.id
+                        this.email = email
                         Log.i(TAG, "One Tap Sign-In success: Email: $email, Name: $displayName")
                         Toast.makeText(this, "One Tap Sign-In successful!", Toast.LENGTH_SHORT).show()
                         navigateToMainApp()
@@ -101,6 +110,11 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
+
+        val auth = FirebaseAuth.getInstance()
+        Log.d("Auth", "Firebase initialized. Current user: ${auth.currentUser?.email}")
+
         setContentView(R.layout.activity_login)
 
         signInButton = findViewById(R.id.signInButton)
@@ -137,7 +151,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         signInButton.setOnClickListener {
-            initiateGoogleSignInWithCredentialManager() // Or initiateOneTapSignIn()
+            initiateSignIn() // Or initiateOneTapSignIn()
         }
     }
 
@@ -145,7 +159,7 @@ class LoginActivity : AppCompatActivity() {
      * Initiates Google Sign-In using Credential Manager.
      * This is the more modern approach that integrates with passkeys and other credential types.
      */
-    private fun initiateGoogleSignInWithCredentialManager() {
+    private fun initiateSignIn() {
         showLoading(true)
         // Configure the GetGoogleIdOption for Credential Manager
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
@@ -165,48 +179,132 @@ class LoginActivity : AppCompatActivity() {
                     context = this@LoginActivity,
                     request = request
                 )
-                handleSignInSuccessWithCredentialManager(result)
+                handleSignInSuccess(result)
             } catch (e: GetCredentialException) {
                 handleSignInFailure(e)
             }
         }
     }
 
-
-    private fun handleSignInSuccessWithCredentialManager(result: GetCredentialResponse) {
+    private fun handleSignInSuccess(result: GetCredentialResponse) {
+        showLoading(true) // Show loading indicator
         val credential = result.credential
+
         when (credential) {
             is GoogleIdTokenCredential -> {
                 val googleIdToken = credential.idToken
                 Log.d(TAG, "Credential Manager Google ID Token: $googleIdToken")
+                this.email = credential.id 
+                val firebaseGoogleCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
 
-                // TODO: Send this token to your backend for verification and further processing
-                // For now, let's just log it and navigate
-
-                try {
-                    val parsedToken = GoogleIdTokenCredential.createFrom(credential.data)
-                    Log.i(TAG, "CM Sign-In success: Display Name: ${parsedToken.displayName}, Email: ${parsedToken.id}")
-                } catch (e: GoogleIdTokenParsingException) {
-                    Log.e(TAG, "Error parsing Google ID Token from Credential Manager: ${e.message}", e)
-                }
-
-                Toast.makeText(this, "Sign-in successful!", Toast.LENGTH_SHORT).show()
-                navigateToMainApp()
+                FirebaseAuth.getInstance().signInWithCredential(firebaseGoogleCredential)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            val firebaseUser = FirebaseAuth.getInstance().currentUser
+                            if (firebaseUser != null) {
+                                Log.i(TAG, "Firebase Sign-In SUCCESS with Google Credential. User: ${firebaseUser.uid}, Email: ${firebaseUser.email}")
+                                this.email = firebaseUser.email ?: credential.id // Prefer Firebase's email if available
+                                
+                                checkUser(firebaseUser)
+                            } else {
+                                Log.e(TAG, "Firebase Sign-In success but currentUser is null!")
+                                Toast.makeText(this, "Sign-in failed: Could not get user session.", Toast.LENGTH_LONG).show()
+                                showLoading(false)
+                            }
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.e(TAG, "Firebase Sign-In FAILED with Google Credential", task.exception)
+                            Toast.makeText(this, "Firebase Authentication Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                            showLoading(false)
+                        }
+                    }
             }
             is CustomCredential -> {
                 Log.d(TAG, "Signed in with a Custom Credential: ${credential.type}")
-                // Handle other credential types like passkeys if you've configured them
-                Toast.makeText(this, "Signed in with a custom credential.", Toast.LENGTH_SHORT).show()
-                navigateToMainApp()
-                // You might need to navigate or perform other actions based on the custom credential type
+                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                    try {
+                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                        val idTokenString = googleIdTokenCredential.idToken
+                        this.email = googleIdTokenCredential.id
+                        val displayName = googleIdTokenCredential.displayName
+
+                        Log.d(TAG, "Custom Credential is Google ID Token. Token: $idTokenString")
+                        Log.i(TAG, "CM Sign-In (Custom Google ID Token): Email: ${this.email}, Name: $displayName")
+                        
+                        val firebaseGoogleCredential = GoogleAuthProvider.getCredential(idTokenString, null)
+                        FirebaseAuth.getInstance().signInWithCredential(firebaseGoogleCredential)
+                            .addOnCompleteListener(this) { task ->
+                                if (task.isSuccessful) {
+                                    val firebaseUser = FirebaseAuth.getInstance().currentUser
+                                    if (firebaseUser != null) {
+                                        Log.i(TAG, "Firebase Sign-In SUCCESS (from Custom Cred). User: ${firebaseUser.uid}, Email: ${firebaseUser.email}")
+                                        this.email = firebaseUser.email ?: googleIdTokenCredential.id
+                                        
+                                        checkUser(firebaseUser)
+                                    } else {
+                                        Log.e(TAG, "Firebase Sign-In success (from Custom Cred) but currentUser is null!")
+                                        Toast.makeText(this, "Sign-in failed: Could not get user session.", Toast.LENGTH_LONG).show()
+                                        showLoading(false)
+                                    }
+                                } else {
+                                    Log.e(TAG, "Firebase Sign-In FAILED (from Custom Cred)", task.exception)
+                                    Toast.makeText(this, "Firebase Authentication Failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                                    showLoading(false)
+                                }
+                            }
+                    } catch (e: GoogleIdTokenParsingException) {
+                        Log.e(TAG, "Failed to parse Google ID token from CustomCredential", e)
+                        Toast.makeText(this, "Failed to process Google sign-in.", Toast.LENGTH_LONG).show()
+                        showLoading(false)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error processing CustomCredential as Google ID Token", e)
+                        Toast.makeText(this, "An unexpected error occurred during sign-in.", Toast.LENGTH_LONG).show()
+                        showLoading(false)
+                    }
+                } else {
+                    Log.w(TAG, "Received an unhandled CustomCredential type: ${credential.type}")
+                    Toast.makeText(this, "Signed in with an unsupported custom credential.", Toast.LENGTH_LONG).show()
+                    showLoading(false)
+                }
             }
             else -> {
                 Log.e(TAG, "Unexpected credential type from Credential Manager: ${credential.type}")
                 Toast.makeText(this, "Sign-in failed: Unexpected credential type.", Toast.LENGTH_LONG).show()
+                showLoading(false)
             }
         }
-        showLoading(false)
     }
+
+    private fun checkUser(firebaseUser: FirebaseUser) {
+
+        if (!this::email.isInitialized || this.email.isEmpty()) {
+            Log.e(TAG, "Email is not available for Firestore check. This shouldn't happen after successful Firebase sign-in.")
+            Toast.makeText(this, "Error: Email not found for profile check.", Toast.LENGTH_LONG).show()
+            showLoading(false)
+            return
+        }
+
+        val userDocumentId = this.email
+
+        Log.d(TAG, "Checking Firestore for user document: $userDocumentId. Firebase Auth UID: ${firebaseUser.uid}")
+
+        db.collection("users").document(userDocumentId).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    Log.d(TAG, "User profile already exists in Firestore for $userDocumentId.")
+                    navigateToMainApp()
+                } else {
+                    Log.d(TAG, "No existing user profile for $userDocumentId. Redirecting to sign up.")
+                    navigateToSignUp(userDocumentId)
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error checking user existence for $userDocumentId", e)
+                Toast.makeText(this, "Failed to check user data. Try again.", Toast.LENGTH_SHORT).show()
+                showLoading(false)
+            }
+    }
+
 
     private fun handleSignInFailure(e: GetCredentialException) {
         showLoading(false)
@@ -227,51 +325,25 @@ class LoginActivity : AppCompatActivity() {
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
     }
 
-
-    /**
-     * Initiates Google Sign-In using the older One Tap client.
-     * This can be a fallback or used if you prefer the One Tap UI directly.
-     */
-    private fun initiateOneTapSignIn() {
-        showLoading(true)
-        // Using signUpRequest here to be more inclusive for first-time users.
-        // You could use signInRequest if you are sure the user has signed in before.
-        oneTapClient.beginSignIn(signUpRequest)
-            .addOnSuccessListener(this) { result ->
-                try {
-                    val intentSenderRequest =
-                        IntentSenderRequest.Builder(result.pendingIntent.intentSender).build()
-                    oneTapSignInResultLauncher.launch(intentSenderRequest)
-                } catch (e: Exception) {
-                    Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}", e)
-                    Toast.makeText(this, "Could not start sign-in process.", Toast.LENGTH_LONG).show()
-                    showLoading(false)
-                }
-            }
-            .addOnFailureListener(this) { e ->
-                Log.e(TAG, "Google One Tap beginSignIn() failed: ${e.localizedMessage}", e)
-                // Common errors:
-                // - Developer error (misconfiguration of client ID, SHA1, API not enabled)
-                // - No network
-                // - No eligible accounts and not falling back gracefully
-                if (e is ApiException) {
-                    if (e.statusCode == CommonStatusCodes.DEVELOPER_ERROR) {
-                        Toast.makeText(this, "Sign-in configuration error. Check Logcat.", Toast.LENGTH_LONG).show()
-                    } else if (e.statusCode == CommonStatusCodes.NETWORK_ERROR) {
-                        Toast.makeText(this, "Network error. Please check connection.", Toast.LENGTH_LONG).show()
-                    } else {
-                        Toast.makeText(this, "Could not initiate sign-in: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Could not initiate sign-in: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-                }
-                showLoading(false)
-            }
-    }
-
     private fun navigateToMainApp() {
+        showLoading(false)
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToSignUp(emailToUseAsId: String?) {
+        showLoading(false)
+        val intent = Intent(this, SignUpActivity::class.java)
+        if (emailToUseAsId != null) {
+            intent.putExtra("USER_EMAIL", emailToUseAsId)
+            Log.d(TAG, "Navigating to SignUpActivity with email for ID: $emailToUseAsId")
+        } else {
+            Log.w(TAG, "Navigating to SignUpActivity but email for ID is null. This is problematic.")
+            Toast.makeText(this, "Critical error: Email for profile ID is missing.", Toast.LENGTH_LONG).show()
+            return
+        }
         startActivity(intent)
         finish()
     }
@@ -279,25 +351,5 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoading(isLoading: Boolean) {
         progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         signInButton.isEnabled = !isLoading
-    }
-
-    // Optional: Sign out (clears Credential Manager state for your app)
-    private fun signOut() {
-        showLoading(true)
-        lifecycleScope.launch {
-            try {
-                credentialManager.clearCredentialState(ClearCredentialStateRequest())
-                Log.d(TAG, "Sign out successful from Credential Manager.")
-                Toast.makeText(this@LoginActivity, "Signed out.", Toast.LENGTH_SHORT).show()
-                // TODO: Also clear your app's local session, tokens, etc.
-                // And potentially sign out from OneTapClient if you want to clear its state too
-                // oneTapClient.signOut()
-            } catch (e: ClearCredentialException) {
-                Log.e(TAG, "Credential Manager Sign out failed: ${e.message}", e)
-                Toast.makeText(this@LoginActivity, "Sign out failed.", Toast.LENGTH_SHORT).show()
-            } finally {
-                showLoading(false)
-            }
-        }
     }
 }

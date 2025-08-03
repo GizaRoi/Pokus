@@ -1,2 +1,0 @@
-package com.mobicom.mco.pokus.auth
-
