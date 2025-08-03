@@ -4,14 +4,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
 
 class ProfileFragment : Fragment() {
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return inflater.inflate(R.layout.activity_profile, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Access values directly from MainActivity companion object
+        view.findViewById<TextView>(R.id.username).text = MainActivity.currentUsername
+        view.findViewById<ImageView>(R.id.profilePic).setImageResource(MainActivity.currentProfilePicRes)
     }
 }

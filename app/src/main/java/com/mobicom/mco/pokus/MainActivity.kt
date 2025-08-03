@@ -10,11 +10,36 @@ import com.mobicom.mco.pokus.search.SearchFragment
 import com.mobicom.mco.pokus.todo.TodoFragment
 import com.mobicom.mco.pokus.sessions.SessionsFragment
 import com.mobicom.mco.pokus.profile.ProfileFragment
-
+import com.mobicom.mco.pokus.home.Post
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    companion object {
+        var currentUsername = "reever"
+        var currentProfilePicRes = R.drawable.profile_pic
+        val currentDate = "A day ago"
+        val currentTitle = "Welcome Back!"
+        val currentContent = "Your latest updates are shown here."
+        val currentTimeSpent = "Time: 1h 40m"
+        val currentTodoList = listOf("✔ Task A", "✔ Task B", "✔ Task C")
+        val currentComments = listOf("You got this!", "Proud of you 💪")
+
+        val dummyPost =
+            Post(
+                name = currentUsername,
+                date = currentDate,
+                title = currentTitle,
+                content = currentContent,
+                imageResId = currentProfilePicRes,
+                timeSpent = currentTimeSpent,
+                todoList = currentTodoList,
+                comments = currentComments
+            )
+
+        val dummyPosts = listOf(dummyPost, dummyPost, dummyPost)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

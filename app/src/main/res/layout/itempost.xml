@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dp"
@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,7 +26,7 @@
                 android:layout_height="40dp"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/profile"
-                android:contentDescription="@string/profile_desc"
+                android:contentDescription="@string/profile"
                 android:scaleType="centerCrop"
                 android:src="@drawable/profile" />
 
@@ -38,7 +39,7 @@
                     android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/name"
+                    android:text="Username"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -46,37 +47,41 @@
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/date"
+                    android:text="Just now"
                     android:textColor="#777777"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Post Title -->
         <TextView
             android:id="@+id/postTitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:text="@string/post_title"
+            android:text="Post Title"
             android:textSize="16sp"
             android:textStyle="bold" />
 
+        <!-- Post Content -->
         <TextView
-            android:id="@+id/postContent"
+            android:id="@+id/postDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@string/post_desc"
+            android:text="Post content here"
             android:textSize="14sp" />
 
+        <!-- Post Image -->
         <ImageView
             android:id="@+id/postImage"
             android:layout_width="match_parent"
             android:layout_height="230dp"
             android:scaleType="centerCrop"
             android:src="@drawable/sample_pic"
-            android:contentDescription="@string/image_desc"/>
+            android:contentDescription="@string/image_desc" />
 
+        <!-- Icons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -85,68 +90,50 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/likeIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/like"
-                android:contentDescription="@string/like"/>
+                android:contentDescription="@string/like" />
 
             <ImageView
-                android:id="@+id/commentIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/comment"
-                android:contentDescription="@string/comment"/>
+                android:contentDescription="@string/comment" />
 
             <ImageView
-                android:id="@+id/shareIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/share"
-                android:contentDescription="@string/share"/>
+                android:contentDescription="@string/share" />
         </LinearLayout>
-
+        <!-- Time Spent -->
         <TextView
             android:id="@+id/timeSpent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Time: 1h 32m"
-            android:textStyle="bold"
-            android:layout_marginTop="12dp"
-            android:textSize="15sp" />
-
-        <TextView
-            android:id="@+id/todoHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/todo"
-            android:textStyle="bold"
-            android:textSize="16sp"
+            android:textSize="13sp"
             android:layout_marginTop="8dp" />
 
-        <LinearLayout
-            android:id="@+id/todoContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="4dp" />
-
+        <!-- To-Do List -->
         <TextView
-            android:id="@+id/commentsHeader"
+            android:id="@+id/todoList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/comment"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_marginTop="16dp" />
+            android:text="✔ Task A\n✔ Task B\n✔ Task C"
+            android:textSize="13sp"
+            android:layout_marginTop="4dp" />
 
-        <LinearLayout
-            android:id="@+id/commentsContainer"
-            android:layout_width="match_parent"
+        <!-- Comments -->
+        <TextView
+            android:id="@+id/comments"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:text="You got this!\nProud of you 💪"
+            android:textSize="13sp"
             android:layout_marginTop="4dp" />
 
     </LinearLayout>
