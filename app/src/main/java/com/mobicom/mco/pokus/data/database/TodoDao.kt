@@ -8,7 +8,7 @@ class TodoDao(context: Context) {
 
     private val dbHelper = PokusDatabaseHelper(context)
 
-    // Function to add a new task to the database
+    // Functions for the main tasks table (no changes here)
     fun addTask(task: TodoItem): Long {
         val db = dbHelper.writableDatabase
         val contentValues = ContentValues().apply {
@@ -20,7 +20,6 @@ class TodoDao(context: Context) {
         return id
     }
 
-    // Function to get all tasks from the database
     fun getAllTasks(): MutableList<TodoItem> {
         val tasks = mutableListOf<TodoItem>()
         val db = dbHelper.readableDatabase
@@ -40,7 +39,6 @@ class TodoDao(context: Context) {
         return tasks
     }
 
-    // Function to update a task's status (e.g., when it's checked off)
     fun updateTaskStatus(id: Long, isChecked: Boolean) {
         val db = dbHelper.writableDatabase
         val contentValues = ContentValues().apply {
@@ -55,7 +53,6 @@ class TodoDao(context: Context) {
         db.close()
     }
 
-    // Function to delete a task from the database
     fun deleteTask(id: Long) {
         val db = dbHelper.writableDatabase
         db.delete(
@@ -63,6 +60,43 @@ class TodoDao(context: Context) {
             "${PokusDatabaseHelper.COLUMN_ID} = ?",
             arrayOf(id.toString())
         )
+        db.close()
+    }
+
+    // NEW: Functions for the session_tasks table
+    fun addTaskToSession(taskId: Long) {
+        val db = dbHelper.writableDatabase
+        val contentValues = ContentValues().apply {
+            put(PokusDatabaseHelper.COLUMN_SESSION_TASK_ID, taskId)
+        }
+        db.insert(PokusDatabaseHelper.TABLE_SESSION_TASKS, null, contentValues)
+        db.close()
+    }
+
+    fun getSessionTasks(): MutableList<TodoItem> {
+        val tasks = mutableListOf<TodoItem>()
+        val db = dbHelper.readableDatabase
+        // SQL JOIN query to get full task details for tasks in the session
+        val query = "SELECT T.* FROM ${PokusDatabaseHelper.TABLE_TASKS} T INNER JOIN ${PokusDatabaseHelper.TABLE_SESSION_TASKS} S ON T.${PokusDatabaseHelper.COLUMN_ID} = S.${PokusDatabaseHelper.COLUMN_SESSION_TASK_ID}"
+        val cursor = db.rawQuery(query, null)
+
+        if (cursor.moveToFirst()) {
+            do {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(PokusDatabaseHelper.COLUMN_ID))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow(PokusDatabaseHelper.COLUMN_TITLE))
+                val isChecked = cursor.getInt(cursor.getColumnIndexOrThrow(PokusDatabaseHelper.COLUMN_IS_CHECKED)) == 1
+
+                tasks.add(TodoItem(id, title, isChecked))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return tasks
+    }
+
+    fun clearSessionTasks() {
+        val db = dbHelper.writableDatabase
+        db.delete(PokusDatabaseHelper.TABLE_SESSION_TASKS, null, null)
         db.close()
     }
 }

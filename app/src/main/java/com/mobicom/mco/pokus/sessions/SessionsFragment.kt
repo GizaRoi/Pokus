@@ -18,6 +18,7 @@ import com.mobicom.mco.pokus.data.repository.PokusRepository
 import com.mobicom.mco.pokus.databinding.ActivitySessionsBinding
 import com.mobicom.mco.pokus.services.TimerService
 import com.mobicom.mco.pokus.todo.TodoItem
+import com.mobicom.mco.pokus.ui.post.SaveSessionActivity
 import java.util.concurrent.TimeUnit
 
 class SessionsFragment : Fragment() {
@@ -25,12 +26,10 @@ class SessionsFragment : Fragment() {
     private var _binding: ActivitySessionsBinding? = null
     private val binding get() = _binding!!
 
-    // Service variables
     private var timerService: TimerService? = null
     private var isBound = false
     private lateinit var serviceIntent: Intent
 
-    // Repository and Adapter variables for tasks
     private lateinit var repository: PokusRepository
     private lateinit var sessionTaskAdapter: SessionTaskAdapter
     private lateinit var sessionTaskList: MutableList<TodoItem>
@@ -60,16 +59,12 @@ class SessionsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         repository = PokusRepository.getInstance(requireContext())
-        sessionTaskList = mutableListOf()
+        sessionTaskList = repository.getSessionTasks()
         sessionTaskAdapter = SessionTaskAdapter(sessionTaskList, requireContext())
         binding.sessionTodoRecyclerView.adapter = sessionTaskAdapter
         binding.sessionTodoRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
         setupClickListeners()
-
-        setSessionControlsVisibility(false)
     }
 
     override fun onStart() {
@@ -77,8 +72,12 @@ class SessionsFragment : Fragment() {
         requireActivity().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
 
         SessionDataHolder.tasksToImport?.let { tasks ->
-            sessionTaskList.addAll(tasks)
-            sessionTaskAdapter.notifyDataSetChanged()
+            tasks.forEach { task ->
+                if (sessionTaskList.none { it.id == task.id }) {
+                    sessionTaskAdapter.addItem(task)
+                    repository.addTaskToSession(task.id)
+                }
+            }
             SessionDataHolder.tasksToImport = null
         }
     }
@@ -94,8 +93,15 @@ class SessionsFragment : Fragment() {
     private fun updateUI() {
         timerService?.let {
             binding.timerText.text = formatTime(it.timeLeftInMillis)
-            binding.startBtn.text = if (it.isTimerRunning) "Pause" else "Start"
-            // Tell the adapter about the timer state change
+
+            binding.startBtn.text = when {
+                it.isTimerRunning -> "Pause"
+                it.hasSessionStarted() -> "Continue"
+                else -> "Start"
+            }
+
+            // **THE FIX**: Use hasSessionStarted() to control visibility
+            setSessionControlsVisibility(it.hasSessionStarted())
             sessionTaskAdapter.setTimerRunning(it.isTimerRunning)
         }
     }
@@ -113,12 +119,11 @@ class SessionsFragment : Fragment() {
             } else {
                 requireActivity().startService(serviceIntent)
                 timerService?.startTimer()
-                setSessionControlsVisibility(true)
             }
             updateUI()
         }
 
-        binding.toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+        binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked && isBound) {
                 val duration = when (checkedId) {
                     R.id.shortBreakBtn -> TimerService.SHORT_BREAK_DURATION
@@ -135,14 +140,21 @@ class SessionsFragment : Fragment() {
                 val durationInMillis = timerService?.getSessionDuration() ?: 0L
                 val tasksDoneCount = sessionTaskList.count { it.isChecked }
 
-                // TODO: Navigate to SaveSessionActivity with data
+                // This line defines the variable 'totalTasksCount'
+                val totalTasksCount = sessionTaskList.size
 
-                timerService?.pauseTimer()
+                // This code uses the variable to pass data to the next screen
+                val intent = Intent(requireContext(), SaveSessionActivity::class.java).apply {
+                    putExtra("SESSION_DURATION", durationInMillis)
+                    putExtra("TASKS_DONE_COUNT", tasksDoneCount)
+                    putExtra("TOTAL_TASKS_COUNT", totalTasksCount)
+                }
+                startActivity(intent)
+
+                // Stop and reset the service/UI
+                timerService?.stopAndResetSession()
                 requireActivity().stopService(serviceIntent)
-
-                setSessionControlsVisibility(false)
-                timerService?.resetTimer(TimerService.POMODORO_DURATION)
-                updateUI() // Update UI to reflect stopped state
+                updateUI()
                 sessionTaskList.clear()
                 sessionTaskAdapter.notifyDataSetChanged()
             }
@@ -170,6 +182,7 @@ class SessionsFragment : Fragment() {
                     val newId = repository.addTask(newTask)
                     val itemWithId = newTask.copy(id = newId)
                     sessionTaskAdapter.addItem(itemWithId)
+                    repository.addTaskToSession(itemWithId.id)
                 }
             }
             .setNegativeButton("Cancel", null)
@@ -190,7 +203,9 @@ class SessionsFragment : Fragment() {
             .setPositiveButton("Import") { _, _ ->
                 for (i in tasksToShow.indices) {
                     if (checkedItems[i]) {
-                        sessionTaskAdapter.addItem(tasksToShow[i])
+                        val importedTask = tasksToShow[i]
+                        sessionTaskAdapter.addItem(importedTask)
+                        repository.addTaskToSession(importedTask.id)
                     }
                 }
             }

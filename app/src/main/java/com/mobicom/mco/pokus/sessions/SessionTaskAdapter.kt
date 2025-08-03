@@ -14,17 +14,15 @@ import com.mobicom.mco.pokus.todo.TodoItem
 
 class SessionTaskAdapter(
     private val items: MutableList<TodoItem>,
-    private val context: Context // Added context to get repository instance
+    private val context: Context // We already have context
 ) : RecyclerView.Adapter<SessionTaskAdapter.SessionTaskViewHolder>() {
 
     private var isTimerRunning = false
-    // Get an instance of the repository to interact with the database
     private val repository = PokusRepository.getInstance(context)
 
-    // Method for the fragment to tell the adapter the timer's state
     fun setTimerRunning(isRunning: Boolean) {
         isTimerRunning = isRunning
-        notifyDataSetChanged() // Redraw the list to show/hide buttons
+        notifyDataSetChanged()
     }
 
     inner class SessionTaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,22 +40,24 @@ class SessionTaskAdapter(
     override fun onBindViewHolder(holder: SessionTaskViewHolder, position: Int) {
         val item = items[position]
         holder.title.text = item.title
-        holder.checkbox.isChecked = item.isChecked
 
         holder.removeButton.visibility = if (isTimerRunning) View.GONE else View.VISIBLE
 
+        // Set checked state without triggering the listener
+        holder.checkbox.setOnCheckedChangeListener(null)
+        holder.checkbox.isChecked = item.isChecked
+
+        // **THE FIX**: Save the checked state to the database
         holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
             item.isChecked = isChecked
+            repository.updateTaskStatus(item.id, isChecked) // Save state
         }
 
         holder.removeButton.setOnClickListener {
             val currentPosition = holder.adapterPosition
             if (currentPosition != RecyclerView.NO_POSITION) {
-                // Get the item to remove
                 val itemToRemove = items[currentPosition]
-                // **NEW**: Delete the task from the database
                 repository.deleteTask(itemToRemove.id)
-                // Remove the item from this adapter's list
                 items.removeAt(currentPosition)
                 notifyItemRemoved(currentPosition)
             }

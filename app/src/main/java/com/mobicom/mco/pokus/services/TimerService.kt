@@ -22,8 +22,6 @@ class TimerService : Service() {
     private var countDownTimer: CountDownTimer? = null
     var timeLeftInMillis: Long = POMODORO_DURATION
     var isTimerRunning: Boolean = false
-
-    // New variable to track session start time
     private var sessionStartTime: Long = 0L
 
     val timeLeftLiveData = MutableLiveData<Long>()
@@ -52,11 +50,9 @@ class TimerService : Service() {
 
     fun startTimer() {
         if (!isTimerRunning) {
-            // Log the start time only once when the session begins
             if (sessionStartTime == 0L) {
                 sessionStartTime = System.currentTimeMillis()
             }
-
             isTimerRunning = true
             isFinishedLiveData.postValue(false)
             startForeground(NOTIFICATION_ID, createNotification("Timer is running..."))
@@ -92,20 +88,26 @@ class TimerService : Service() {
         updateNotification(formatTime(duration))
     }
 
-    // New public function to get the total session duration
+    // NEW: Method to fully stop and reset the session
+    fun stopAndResetSession() {
+        pauseTimer()
+        sessionStartTime = 0L // Reset the session start time
+        resetTimer(POMODORO_DURATION)
+        stopForeground(true)
+    }
+
     fun getSessionDuration(): Long {
-        if (sessionStartTime == 0L) {
-            return 0L
-        }
+        if (sessionStartTime == 0L) return 0L
         return System.currentTimeMillis() - sessionStartTime
     }
+
+    // NEW: Public method to check if a session has ever been started
+    fun hasSessionStarted(): Boolean = sessionStartTime > 0L
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
-                CHANNEL_ID,
-                "Timer Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
+                CHANNEL_ID, "Timer Service Channel", NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(serviceChannel)
