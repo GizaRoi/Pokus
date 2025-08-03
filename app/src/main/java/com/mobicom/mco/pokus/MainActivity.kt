@@ -9,6 +9,8 @@ import com.mobicom.mco.pokus.home.HomeFragment
 import com.mobicom.mco.pokus.search.SearchFragment
 import com.mobicom.mco.pokus.todo.TodoFragment
 import com.mobicom.mco.pokus.sessions.SessionsFragment
+import com.mobicom.mco.pokus.profile.ProfileFragment
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Default fragment
+        // Default fragment* to change later with log in
         loadFragment(HomeFragment())
 
         binding.bottomNav.setOnItemSelectedListener { item ->
@@ -28,6 +30,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_search -> loadFragment(SearchFragment())
                 R.id.nav_todo -> loadFragment(TodoFragment())
                 R.id.nav_sessions -> loadFragment(SessionsFragment())
+                R.id.nav_profile -> loadFragment(ProfileFragment())
+
             }
             true
         }

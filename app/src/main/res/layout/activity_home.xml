@@ -26,15 +26,6 @@
             android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/profileIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/profile"
-            android:contentDescription="@string/profile"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Recycler View -->

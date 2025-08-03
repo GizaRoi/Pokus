@@ -19,10 +19,14 @@ class PostAdapter(private val postList: List<Post>) :
         val postTitle: TextView = itemView.findViewById(R.id.postTitle)
         val postContent: TextView = itemView.findViewById(R.id.postContent)
         val postImage: ImageView = itemView.findViewById(R.id.postImage)
+
         val timeSpent: TextView = itemView.findViewById(R.id.timeSpent)
+        val todoHeader: TextView = itemView.findViewById(R.id.todoHeader)
         val todoContainer: LinearLayout = itemView.findViewById(R.id.todoContainer)
+        val commentsHeader: TextView = itemView.findViewById(R.id.commentsHeader)
         val commentsContainer: LinearLayout = itemView.findViewById(R.id.commentsContainer)
     }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -38,28 +42,44 @@ class PostAdapter(private val postList: List<Post>) :
         holder.postTitle.text = post.title
         holder.postContent.text = post.content
         holder.postImage.setImageResource(post.imageResId)
-        holder.timeSpent.text = post.timeSpent
 
-        // To-Do List
+        // Initially hidden
+        holder.timeSpent.visibility = View.GONE
+        holder.todoHeader.visibility = View.GONE
+        holder.todoContainer.visibility = View.GONE
+        holder.commentsHeader.visibility = View.GONE
+        holder.commentsContainer.visibility = View.GONE
+
+        // Add dummy todo items
         holder.todoContainer.removeAllViews()
         post.todoList.forEach {
-            val item = TextView(holder.itemView.context)
-            item.text = it
-            item.textSize = 14f
-            item.setTextColor(Color.parseColor("#555555"))
-            holder.todoContainer.addView(item)
+            val todoItem = TextView(holder.itemView.context)
+            todoItem.text = it
+            holder.todoContainer.addView(todoItem)
         }
 
-        // Comments
+        // Add dummy comments
         holder.commentsContainer.removeAllViews()
         post.comments.forEach {
-            val comment = TextView(holder.itemView.context)
-            comment.text = it
-            comment.textSize = 13f
-            comment.setTextColor(Color.DKGRAY)
-            holder.commentsContainer.addView(comment)
+            val commentItem = TextView(holder.itemView.context)
+            commentItem.text = it
+            holder.commentsContainer.addView(commentItem)
         }
+
+        // Toggle visibility on click
+        holder.itemView.setOnClickListener {
+            val visibility = if (holder.timeSpent.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+
+            holder.timeSpent.visibility = visibility
+            holder.todoHeader.visibility = visibility
+            holder.todoContainer.visibility = visibility
+            holder.commentsHeader.visibility = visibility
+            holder.commentsContainer.visibility = visibility
+        }
+
+        holder.timeSpent.text = post.timeSpent
     }
+
 
     override fun getItemCount(): Int = postList.size
 }
