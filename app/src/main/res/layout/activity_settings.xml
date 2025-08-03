@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Top Bar -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/backIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/backarrow"
+                android:contentDescription="Back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <TextView
+                android:id="@+id/settingsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settings"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                app:layout_constraintStart_toEndOf="@id/backIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="8dp"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- ACCOUNT -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ACCOUNT"
+            android:textStyle="bold"
+            android:textColor="#666666"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/editProfileBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"
+            android:textColor="#000000"
+            android:textAllCaps="false"
+            android:background="@drawable/edittext_background"
+            android:gravity="start|center_vertical"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            android:clickable="true"
+            android:focusable="true" />
+
+
+        <!-- ABOUT -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ABOUT"
+            android:textStyle="bold"
+            android:textColor="#666666"
+            android:layout_marginBottom="8dp"
+            android:textAllCaps="false" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Terms of Service"
+            android:background="@drawable/edittext_background"
+            android:textColor="#000000"
+            android:textAllCaps="false"
+            android:gravity="start|center_vertical"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Privacy and Policy"
+            android:background="@drawable/edittext_background"
+            android:textColor="#000000"
+            android:textAllCaps="false"
+            android:gravity="start|center_vertical"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="16dp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Logout Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log Out"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#424242"
+            app:cornerRadius="8dp"
+            android:layout_marginTop="32dp" />
+    </LinearLayout>
+</ScrollView>
