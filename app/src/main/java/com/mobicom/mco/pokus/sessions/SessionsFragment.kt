@@ -9,10 +9,15 @@ import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.mobicom.mco.pokus.R
+import com.mobicom.mco.pokus.data.repository.PokusRepository
 import com.mobicom.mco.pokus.databinding.ActivitySessionsBinding
 import com.mobicom.mco.pokus.services.TimerService
+import com.mobicom.mco.pokus.todo.TodoItem
 import java.util.concurrent.TimeUnit
 
 class SessionsFragment : Fragment() {
@@ -20,16 +25,22 @@ class SessionsFragment : Fragment() {
     private var _binding: ActivitySessionsBinding? = null
     private val binding get() = _binding!!
 
+    // Service variables
     private var timerService: TimerService? = null
     private var isBound = false
     private lateinit var serviceIntent: Intent
+
+    // Repository and Adapter variables for tasks
+    private lateinit var repository: PokusRepository
+    private lateinit var sessionTaskAdapter: SessionTaskAdapter
+    private lateinit var sessionTaskList: MutableList<TodoItem>
 
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as TimerService.TimerBinder
             timerService = binder.getService()
             isBound = true
-            updateUI() // Update UI as soon as we connect
+            updateUI()
             setupObservers()
         }
 
@@ -49,12 +60,27 @@ class SessionsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        repository = PokusRepository.getInstance(requireContext())
+        sessionTaskList = mutableListOf()
+        sessionTaskAdapter = SessionTaskAdapter(sessionTaskList, requireContext())
+        binding.sessionTodoRecyclerView.adapter = sessionTaskAdapter
+        binding.sessionTodoRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
         setupClickListeners()
+
+        setSessionControlsVisibility(false)
     }
 
     override fun onStart() {
         super.onStart()
         requireActivity().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
+
+        SessionDataHolder.tasksToImport?.let { tasks ->
+            sessionTaskList.addAll(tasks)
+            sessionTaskAdapter.notifyDataSetChanged()
+            SessionDataHolder.tasksToImport = null
+        }
     }
 
     override fun onStop() {
@@ -69,7 +95,15 @@ class SessionsFragment : Fragment() {
         timerService?.let {
             binding.timerText.text = formatTime(it.timeLeftInMillis)
             binding.startBtn.text = if (it.isTimerRunning) "Pause" else "Start"
+            // Tell the adapter about the timer state change
+            sessionTaskAdapter.setTimerRunning(it.isTimerRunning)
         }
+    }
+
+    private fun setSessionControlsVisibility(isVisible: Boolean) {
+        val visibility = if (isVisible) View.VISIBLE else View.GONE
+        binding.finishBtn.visibility = visibility
+        binding.sessionActionsLayout.visibility = visibility
     }
 
     private fun setupClickListeners() {
@@ -77,8 +111,9 @@ class SessionsFragment : Fragment() {
             if (timerService?.isTimerRunning == true) {
                 timerService?.pauseTimer()
             } else {
-                requireActivity().startService(serviceIntent) // Start the service to make it long-running
+                requireActivity().startService(serviceIntent)
                 timerService?.startTimer()
+                setSessionControlsVisibility(true)
             }
             updateUI()
         }
@@ -96,12 +131,71 @@ class SessionsFragment : Fragment() {
         }
 
         binding.finishBtn.setOnClickListener {
-            if(isBound) {
+            if (isBound) {
+                val durationInMillis = timerService?.getSessionDuration() ?: 0L
+                val tasksDoneCount = sessionTaskList.count { it.isChecked }
+
+                // TODO: Navigate to SaveSessionActivity with data
+
                 timerService?.pauseTimer()
                 requireActivity().stopService(serviceIntent)
+
+                setSessionControlsVisibility(false)
+                timerService?.resetTimer(TimerService.POMODORO_DURATION)
+                updateUI() // Update UI to reflect stopped state
+                sessionTaskList.clear()
+                sessionTaskAdapter.notifyDataSetChanged()
             }
-            // TODO: Navigate to SaveSessionActivity
         }
+
+        binding.btnAddTask.setOnClickListener {
+            showAddTaskDialog()
+        }
+
+        binding.btnImportTask.setOnClickListener {
+            showImportTaskDialog()
+        }
+    }
+
+    private fun showAddTaskDialog() {
+        val input = EditText(requireContext())
+        AlertDialog.Builder(requireContext())
+            .setTitle("Add New Task")
+            .setMessage("What new task do you want to add?")
+            .setView(input)
+            .setPositiveButton("Add") { _, _ ->
+                val taskTitle = input.text.toString()
+                if (taskTitle.isNotEmpty()) {
+                    val newTask = TodoItem(title = taskTitle, isChecked = false)
+                    val newId = repository.addTask(newTask)
+                    val itemWithId = newTask.copy(id = newId)
+                    sessionTaskAdapter.addItem(itemWithId)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showImportTaskDialog() {
+        val allTasks = repository.getAllTasks()
+        val tasksToShow = allTasks.filter { task -> sessionTaskList.none { it.id == task.id } }.toTypedArray()
+        val taskTitles = tasksToShow.map { it.title }.toTypedArray()
+        val checkedItems = BooleanArray(tasksToShow.size)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Import Tasks")
+            .setMultiChoiceItems(taskTitles, checkedItems) { _, which, isChecked ->
+                checkedItems[which] = isChecked
+            }
+            .setPositiveButton("Import") { _, _ ->
+                for (i in tasksToShow.indices) {
+                    if (checkedItems[i]) {
+                        sessionTaskAdapter.addItem(tasksToShow[i])
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun setupObservers() {
@@ -112,7 +206,6 @@ class SessionsFragment : Fragment() {
         timerService?.isFinishedLiveData?.observe(viewLifecycleOwner) { isFinished ->
             if (isFinished) {
                 updateUI()
-                // TODO: Play a sound
             }
         }
     }
