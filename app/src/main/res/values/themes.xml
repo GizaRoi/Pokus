@@ -1,0 +1,50 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme (Light). -->
+    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/lt_colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/lt_colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/lt_colorOnPrimary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/lt_colorSecondary</item>
+        <item name="colorSecondaryVariant">@color/lt_colorSecondaryVariant</item>
+        <item name="colorOnSecondary">@color/lt_colorOnSecondary</item>
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/lt_colorBackground</item>
+        <item name="colorOnBackground">@color/lt_colorOnBackground</item>
+        <!-- Surface colors (for cards, dialogs, bottom sheets, etc.) -->
+        <item name="colorSurface">@color/lt_colorSurface</item>
+        <item name="colorOnSurface">@color/lt_colorOnSurface</item>
+        <!-- Error colors -->
+        <item name="colorError">@color/lt_colorError</item>
+        <item name="colorOnError">@color/lt_colorOnError</item>
+
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- For light status bar, icons should be dark -->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+
+        <!-- Default text color -->
+        <item name="android:textColor">@color/lt_colorOnBackground</item>
+        <item name="android:textColorHint">@color/medium_gray_text</item>
+
+        <!-- Example: Make MaterialButtons use primary color for text by default in light theme -->
+        <item name="materialButtonOutlinedStyle">@style/Widget.App.Button.OutlinedButton</item>
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+    </style>
+
+    <!-- Specific style for outlined buttons to ensure black text on white background -->
+    <style name="Widget.App.Button.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@color/black</item>
+        <item name="strokeColor">@color/black</item>
+        <item name="iconTint">@color/black</item>
+    </style>
+
+    <!-- Specific style for contained buttons to ensure white text on black background -->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/black</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+</resources>

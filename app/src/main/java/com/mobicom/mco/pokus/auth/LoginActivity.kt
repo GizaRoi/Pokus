@@ -27,7 +27,7 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import com.mobicom.mco.pokus.home.MainActivity // Replace with your actual main activity
+import com.mobicom.mco.pokus.MainActivity // Replace with your actual main activity
 import com.mobicom.mco.pokus.R
 import kotlinx.coroutines.launch
 import androidx.credentials.exceptions.GetCredentialCancellationException

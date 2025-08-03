@@ -30,4 +30,38 @@
 
     <!-- Error Color -->
     <color name="errorColor">#D32F2F</color> <!-- Standard Material error red -->
+
+    <!-- For subtle text or disabled states -->
+    <color name="almost_black">#FF212121</color> <!-- Very dark gray -->
+    <color name="very_light_gray">#FFF5F5F5</color> <!-- For light surfaces or dividers -->
+    <color name="medium_gray_text">#FF757575</color> <!-- For secondary text -->
+
+    <!-- Semantic Colors - Light Theme -->
+    <color name="lt_colorPrimary">@color/black</color>
+    <color name="lt_colorPrimaryVariant">@color/black</color>
+    <color name="lt_colorOnPrimary">@color/white</color>
+    <color name="lt_colorSecondary">@color/almost_black</color>
+    <color name="lt_colorSecondaryVariant">@color/almost_black</color>
+    <color name="lt_colorOnSecondary">@color/white</color>
+    <color name="lt_colorBackground">@color/white</color>
+    <color name="lt_colorOnBackground">@color/black</color>
+    <color name="lt_colorSurface">@color/white</color>
+    <color name="lt_colorOnSurface">@color/black</color>
+    <color name="lt_colorError">@color/black</color> <!-- Using black for error for simplicity, typically red -->
+    <color name="lt_colorOnError">@color/white</color>
+
+    <!-- Semantic Colors - Dark Theme -->
+    <color name="dt_colorPrimary">@color/white</color>
+    <color name="dt_colorPrimaryVariant">@color/white</color>
+    <color name="dt_colorOnPrimary">@color/black</color>
+    <color name="dt_colorSecondary">@color/very_light_gray</color>
+    <color name="dt_colorSecondaryVariant">@color/very_light_gray</color>
+    <color name="dt_colorOnSecondary">@color/black</color>
+    <color name="dt_colorBackground">@color/black</color>
+    <color name="dt_colorOnBackground">@color/white</color>
+    <color name="dt_colorSurface">@color/almost_black</color> <!-- Surface slightly lighter than background -->
+    <color name="dt_colorOnSurface">@color/white</color>
+    <color name="dt_colorError">@color/white</color> <!-- Using white for error for simplicity -->
+    <color name="dt_colorOnError">@color/black</color>
+
 </resources>
