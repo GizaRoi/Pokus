@@ -43,6 +43,8 @@
         <activity android:name=".profile.EditProfileActivity" />
         <activity android:name=".profile.PrivacyPolicy" />
         <activity android:name=".profile.TermsConditions" />
+        <activity android:name=".search.UserProfile" />
+
 
         <service
             android:name=".services.TimerService"

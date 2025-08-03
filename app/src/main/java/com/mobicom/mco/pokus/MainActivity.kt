@@ -39,6 +39,26 @@ class MainActivity : AppCompatActivity() {
         val currentComments = listOf("You got this!", "Proud of you 💪")
         val currentCommentUsernames = listOf("peter", "david")
 
+        val currentUsernames = listOf("reever", "peter", "david", "lacson")
+
+        val userStats = mapOf(
+            "reever" to Triple(12, 148, 89),     // sessions, followers, following
+            "peter" to Triple(5, 321, 210),
+            "david" to Triple(7, 200, 123)
+        )
+
+        val userBios = mapOf(
+            "reever" to "CS student trying to survive finals.",
+            "peter" to "Forever budots champion.",
+            "david" to "Aspiring CEO."
+        )
+
+        val userLinks = mapOf(
+            "reever" to "instagram.com/roimark",
+            "peter" to "tiktok.com/@peter",
+            "david" to "facebook.com/david"
+        )
+
 
         val dummyPost = Post(
             name = currentUsername,
