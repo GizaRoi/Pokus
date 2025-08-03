@@ -17,7 +17,7 @@
             android:layout_marginBottom="16dp">
 
             <ImageView
-                android:id="@+id/backTermsIcon"
+                android:id="@+id/backPrivacyIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/backarrow"
@@ -29,12 +29,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Terms and Conditions"
+                android:text="Privacy Policy"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="#000000"
                 android:layout_marginStart="8dp"
-                app:layout_constraintStart_toEndOf="@id/backTermsIcon"
+                app:layout_constraintStart_toEndOf="@id/backPrivacyIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -43,7 +43,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="By using Pokus, you agree to the following terms:"
+            android:text="Pokus values your privacy and is committed to protecting your data."
             android:textSize="16sp"
             android:textColor="#000000"
             android:layout_marginBottom="8dp" />
@@ -51,7 +51,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1. Purpose of the App:\nPokus is designed to help users track their study sessions, manage productivity goals, and reflect on their academic progress."
+            android:text="1. Data Collection:\nWe collect basic data such as your username, email (if applicable), study session durations, to-do list items, and app usage patterns for productivity insights."
             android:textSize="16sp"
             android:textColor="#000000"
             android:layout_marginBottom="8dp"
@@ -60,7 +60,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="2. User Responsibility:\nUsers agree to use Pokus solely for personal productivity and agree not to misuse any of its features (e.g., spam, abuse of challenges, false data reporting)."
+            android:text="2. Data Usage:\nThe data is used solely to enhance user experience within the app, such as showing progress reports, trend charts, and personalized study tips. We do not sell your data."
             android:textSize="16sp"
             android:textColor="#000000"
             android:layout_marginBottom="8dp"
@@ -69,7 +69,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="3. Account Data:\nYou are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account."
+            android:text="3. Storage:\nUser data is stored securely within the app’s internal database. If cloud sync is enabled in future versions, encrypted transfer and storage will be implemented."
             android:textSize="16sp"
             android:textColor="#000000"
             android:layout_marginBottom="8dp"
@@ -78,16 +78,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="4. Updates and Modifications:\nPokus reserves the right to update the app features or terms of use at any time. Continued use after updates implies acceptance."
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:layout_marginBottom="8dp"
-            android:lineSpacingExtra="4dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="5. Termination:\nWe reserve the right to suspend or terminate access to Pokus if there is any violation of these terms."
+            android:text="4. User Control:\nYou may request to delete all your stored data at any time by contacting our team or through an in-app data reset option."
             android:textSize="16sp"
             android:textColor="#000000"
             android:layout_marginBottom="24dp"
