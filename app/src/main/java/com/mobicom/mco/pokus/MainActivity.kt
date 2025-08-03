@@ -31,25 +31,26 @@ class MainActivity : AppCompatActivity() {
         var currentBio: String = "CS student trying to survive finals. Focused on mobile development and AI. Let's get this bread!"
         var currentLink: String = "instagram.com/roimark"
 
-        var currentProfilePicRes = R.drawable.profile_pic
         val currentDate = "A day ago"
         val currentTitle = "Welcome Back!"
         val currentContent = "Your latest updates are shown here."
-        val currentTimeSpent = "Time: 1h 40m"
+        val currentTimeSpent = "1h 40m"
         val currentTodoList = listOf("✔ Task A", "✔ Task B", "✔ Task C")
         val currentComments = listOf("You got this!", "Proud of you 💪")
+        val currentCommentUsernames = listOf("peter", "david")
 
-        val dummyPost =
-            Post(
-                name = currentUsername,
-                date = currentDate,
-                title = currentTitle,
-                content = currentContent,
-                imageResId = currentProfilePicRes,
-                timeSpent = currentTimeSpent,
-                todoList = currentTodoList,
-                comments = currentComments
-            )
+
+        val dummyPost = Post(
+            name = currentUsername,
+            date = currentDate,
+            title = currentTitle,
+            content = currentContent,
+            timeSpent = currentTimeSpent,
+            todoList = currentTodoList,
+            commentUsernames = currentCommentUsernames.toMutableList(),
+            comments = currentComments.toMutableList()
+        )
+
 
         val dummyPosts = listOf(dummyPost, dummyPost, dummyPost)
 
