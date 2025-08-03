@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
@@ -52,59 +53,80 @@
             android:layout_marginTop="32dp" />
 
         <EditText
-            android:id="@+id/emailField"
+            android:id="@+id/bioField"
             android:layout_width="300dp"
-            android:layout_height="50dp"
-            android:hint="@string/email"
-            android:background="@drawable/edittext_background"
+            android:layout_height="120dp"
+            android:layout_marginTop="16dp"
             android:autofillHints="emailAddress"
-            android:inputType="textEmailAddress"
+            android:background="@drawable/edittext_background"
+            android:gravity="start"
+            android:hint="Bio (optional)"
+            android:inputType="text|textMultiLine"
             android:padding="12dp"
+            android:singleLine="false"
             android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/usernameField"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/usernameField" />
 
         <EditText
-            android:id="@+id/passwordField"
+            android:id="@+id/schoolField"
             android:layout_width="300dp"
             android:layout_height="50dp"
-            android:hint="@string/password"
-            android:background="@drawable/edittext_background"
+            android:layout_marginTop="16dp"
             android:autofillHints="password"
-            android:inputType="textPassword"
+            android:background="@drawable/edittext_background"
+            android:hint="School (optional)"
+            android:inputType="text"
             android:padding="12dp"
             android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/emailField"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
+            app:layout_constraintHorizontal_bias="0.492"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bioField" />
+
+        <EditText
+            android:id="@+id/linksField"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
+            android:autofillHints="password"
+            android:background="@drawable/edittext_background"
+            android:hint="Links (optional)"
+            android:inputType="text"
+            android:padding="12dp"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.492"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/schoolField" />
 
         <CheckBox
             android:id="@+id/termsCheckbox"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="20dp"
             android:text="@string/terms_text"
             android:textColor="#666666"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/passwordField" />
+            app:layout_constraintTop_toBottomOf="@id/linksField"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <Button
             android:id="@+id/createAccountBtn"
             android:layout_width="150dp"
             android:layout_height="50dp"
-            android:text="@string/create_account"
-            android:textStyle="bold"
+            android:layout_marginTop="12dp"
             android:backgroundTint="#222222"
+            android:text="@string/create_account"
             android:textColor="#FFFFFF"
-            app:layout_constraintTop_toBottomOf="@id/termsCheckbox"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp" />
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/termsCheckbox" />
 
         <LinearLayout
             android:id="@+id/loginRedirectLayout"
@@ -114,23 +136,7 @@
             app:layout_constraintTop_toBottomOf="@id/createAccountBtn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp">
-
-            <TextView
-                android:text="@string/login_prompt"
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/loginLink"
-                android:text="@string/login"
-                android:textColor="#1976D2"
-                android:textSize="14sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp" />
-        </LinearLayout>
+            android:layout_marginTop="24dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
