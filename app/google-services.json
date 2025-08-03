@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1005774447205",
+    "project_id": "pokus-9b955",
+    "storage_bucket": "pokus-9b955.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1005774447205:android:e1710e07e111ce8b3edc8c",
+        "android_client_info": {
+          "package_name": "com.mobicom.mco.pokus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1005774447205-3d540itm164s3uprvhd4g1giplnrhhf7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobicom.mco.pokus",
+            "certificate_hash": "ec7d686ef0253277706d625e41c78f5666ae4d2d"
+          }
+        },
+        {
+          "client_id": "1005774447205-caekeutqcotl24uf6gdtekn7519qhhlb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDW-olB6vRiG4tJa7HSi1j8-joyV5CTQlo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1005774447205-caekeutqcotl24uf6gdtekn7519qhhlb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

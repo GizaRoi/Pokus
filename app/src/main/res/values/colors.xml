@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Your app's branding colors (examples) -->
+    <color name="primaryColor">#007AFF</color> <!-- A nice blue for primary actions -->
+    <color name="primaryDarkColor">#005bb5</color> <!-- A darker shade for status bar, etc. -->
+    <color name="primaryLightColor">#63a4ff</color> <!-- A lighter shade if needed -->
+    <color name="secondaryColor">#FF6600</color> <!-- An orange for secondary accents (FABs, etc.) -->
+    <color name="secondaryDarkColor">#c43600</color>
+    <color name="secondaryLightColor">#ff983f</color>
+
+    <!-- Basic Theme Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="light_gray">#F5F5F5</color> <!-- Very light gray for subtle backgrounds or dividers -->
+    <color name="medium_gray">#B0B0B0</color> <!-- For icons or less important text -->
+    <color name="dark_gray">#333333</color> <!-- For primary text on white backgrounds -->
+
+    <!-- Text Colors -->
+    <color name="textColorPrimaryOnWhite">@color/dark_gray</color> <!-- Primary text on light backgrounds -->
+    <color name="textColorSecondaryOnWhite">@color/medium_gray</color> <!-- Secondary text on light backgrounds -->
+    <color name="textColorPrimaryOnDark">@color/white</color> <!-- Primary text on dark backgrounds (e.g., on primaryColor button) -->
+
+    <!-- Status Bar Color (can be primaryDarkColor or specific if needed) -->
+    <color name="statusBarColor">@color/primaryDarkColor</color>
+
+    <!-- Background Colors -->
+    <color name="windowBackgroundColor">@color/white</color>
+    <color name="surfaceColor">@color/white</color> <!-- Cards, Sheets, Menus -->
+    <color name="appBarBackgroundColor">@color/primaryColor</color>
+
+    <!-- Error Color -->
+    <color name="errorColor">#D32F2F</color> <!-- Standard Material error red -->
+</resources>
