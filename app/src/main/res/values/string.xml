@@ -16,4 +16,24 @@
     <string name="terms_text">By clicking this box, you agree to the Terms and Conditions and Privacy Policy.</string>
     <string name="create_account">Create Account</string>
     <string name="login_prompt">Already have an account?</string>
+
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="todo">To Do</string>
+    <string name="sessions">Sessions</string>
+
+    <string name="profile">Profile</string>
+    <string name="profile_desc">Profile picture of the user</string>
+    <string name="image_desc">Picture of the user</string>
+    <string name="like">Like</string>
+    <string name="comment">Comments</string>
+    <string name="share">Share</string>
+    <string name="time">Time</string>
+    <string name="name">Roimarc</string>
+    <string name="date">A day ago</string>
+    <string name="post_title">MOBICOM and STCLOUD Session</string>
+    <string name="post_desc">Just finished coding most of my backlogs. Minor subject reqs tomorrow!</string>
+
+
+
 </resources>
