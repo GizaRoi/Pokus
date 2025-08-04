@@ -2,18 +2,21 @@ package com.mobicom.mco.pokus.home
 
 import com.mobicom.mco.pokus.todo.TodoItem
 
+
+// Post model to match Firestore structure
 data class Post(
-    val email: String,
-    val id: String,
-    val name: String,
-    val date: String,
-    val title: String,
-    val content: String,
-    val timeSpent: String,
-    val todoList: ArrayList<TodoItem>,
-    var isLiked: Boolean = false,
-    var likes: Int = 0,
-    var comments: ArrayList<Comment> = ArrayList()
+    var id: String = "",
+    val name: String = "", // username of the author
+    val userId: String = "", // Firebase Auth UID
+    val date: String = "",
+    val email: String = "",
+    val timeSpent: String = "",
+    val title: String = "",
+    val content: String = "",
+    val durationMillis: Long = 0L, // Storing duration as milliseconds
+    val likes: Int = 0,
+    val todoList: List<String> = emptyList(), // Storing only the titles as Strings
+    var isLiked: Boolean = false
 )
 
 data class Comment(

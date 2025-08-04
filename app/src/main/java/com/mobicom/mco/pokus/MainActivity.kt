@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.mobicom.mco.pokus.databinding.ActivityMainBinding
@@ -14,8 +13,6 @@ import com.mobicom.mco.pokus.todo.TodoFragment
 import com.mobicom.mco.pokus.sessions.SessionsFragment
 import com.mobicom.mco.pokus.profile.ProfileFragment
 import com.mobicom.mco.pokus.home.Post
-import com.mobicom.mco.pokus.todo.TodoItem
-import java.util.Date
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         const val KEY_NAME = "username"
         const val KEY_BIO = "bio"
         const val KEY_LINK = "link"
+        const val KEY_PFP = "pfpURL"
+        const val KEY_SCHOOL = "school"
         var posts: ArrayList<Post> = ArrayList()
     }
 
@@ -43,11 +42,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        currentUsername = prefs.getString(KEY_NAME, currentUsername) ?: currentUsername
-        currentBio = prefs.getString(KEY_BIO, currentBio) ?: currentBio
-        currentLink = prefs.getString(KEY_LINK, currentLink) ?: currentLink
-        currentPfp = prefs.getString("pfpURL", currentPfp) ?: currentPfp
-        currentSchool = prefs.getString("school", currentSchool) ?: currentSchool
+        currentUsername = prefs.getString(KEY_NAME, "Guest") ?: "Guest"
+        currentBio = prefs.getString(KEY_BIO, "No bio yet.") ?: "No bio yet."
+        currentLink = prefs.getString(KEY_LINK, "") ?: ""
+        currentPfp = prefs.getString(KEY_PFP, "astronaut") ?: "astronaut"
+        currentSchool = prefs.getString(KEY_SCHOOL, "") ?: ""
+
         fetchUserData()
         fetchPosts()
 
@@ -111,15 +111,9 @@ class MainActivity : AppCompatActivity() {
                         likes = doc.getLong("likes")?.toInt() ?: 0,
                         content = doc.getString("content") ?: "",
                         name = doc.getString("author") ?: "",
-                        timeSpent = doc.getDate("timeSpent").toString(),
-                        date = doc.getDate("date")?.toString() ?: Date().toString(),
-                        todoList = (doc.get("todoList") as? List<Map<String, Any>>)?.map { todoMap ->
-                            TodoItem(
-                                id = todoMap["id"] as Long,
-                                title = todoMap["title"] as String,
-                                isChecked= todoMap["isCompleted"] as Boolean
-                            )
-                        }?.toCollection(ArrayList()) ?: ArrayList(),
+                        timeSpent = doc.getString("timeSpent") ?: "0m",
+                        date = doc.getString("date") ?: "",
+                        todoList = doc.get("todoList") as? ArrayList<String> ?: ArrayList(),
                     )
                 } as ArrayList<Post>
             }

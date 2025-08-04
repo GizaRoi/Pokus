@@ -51,6 +51,9 @@
         <activity android:name=".profile.TermsConditions" />
         <activity android:name=".search.UserProfile" />
 
+        <activity
+            android:name=".auth.SignUpActivity"
+            android:exported="false" />
 
         <service
             android:name=".services.TimerService"

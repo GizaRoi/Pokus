@@ -1,9 +1,7 @@
 package com.mobicom.mco.pokus.ui.post
 
 import android.content.Intent
-import com.mobicom.mco.pokus.home.Post
 import android.os.Bundle
-import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,19 +10,22 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
 import com.mobicom.mco.pokus.databinding.ActivitySaveSessionBinding
+import com.mobicom.mco.pokus.home.Post
 import com.mobicom.mco.pokus.todo.TodoItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class SaveSessionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySaveSessionBinding
-    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+
     // Variable to hold the list of completed tasks
     private lateinit var completedTasks: ArrayList<TodoItem>
+    private var durationInMillis: Long = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +33,9 @@ class SaveSessionActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Get data from the Intent
-        val durationInMillis = intent.getLongExtra("SESSION_DURATION", 0L)
+        durationInMillis = intent.getLongExtra("SESSION_DURATION", 0L)
         val tasksDoneCount = intent.getIntExtra("TASKS_DONE_COUNT", 0)
         val totalTasksCount = intent.getIntExtra("TOTAL_TASKS_COUNT", 0)
-        // Retrieve the ArrayList of completed tasks
         completedTasks = intent.getParcelableArrayListExtra("COMPLETED_TASKS_LIST") ?: arrayListOf()
 
         // Display the data
@@ -43,58 +43,51 @@ class SaveSessionActivity : AppCompatActivity() {
         binding.tvTasksDone.text = "$tasksDoneCount / $totalTasksCount\nTasks Done"
         binding.tvDateTime.text = SimpleDateFormat("dd MMMM yyyy, hh:mm a", Locale.getDefault()).format(Date())
 
-        // Set up the visibility spinner
         val visibilityAdapter = ArrayAdapter.createFromResource(
-            this,
-            R.array.visibility_options,
-            android.R.layout.simple_spinner_item
-        )
-        visibilityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerVisibility.adapter = visibilityAdapter
-
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
+            this, R.array.visibility_options, android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinnerVisibility.adapter = adapter
         }
 
-        // Set listener for the Discard button
-        binding.btnDiscard.setOnClickListener {
-            finish()
-        }
-
-        // Set listener for the "Post" button
-        binding.btnSavePost.setOnClickListener {
-            // Backend developer will replace this with Firebase logic
-            savePostToFirebase()
-        }
+        binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.btnDiscard.setOnClickListener { finish() }
+        binding.btnSavePost.setOnClickListener { savePostToFirebase() }
     }
 
     private fun savePostToFirebase() {
-        // --- THIS IS WHERE THE BACKEND LOGIC WILL GO ---
-        // For now, we will simulate a successful post for the UI.
-        val db = FirebaseFirestore.getInstance()
-        val post = Post(
-            id = UUID.randomUUID().toString(),
-            name = MainActivity.currentUsername,
-            title = "Session Summary",
-            content = "${binding.etDescription.text}",
-            date = binding.tvDateTime.text.toString(),
-            email = firebaseAuth.currentUser?.uid ?: "unknown_user",
-            timeSpent = binding.tvDuration.text.toString(),
-            todoList = completedTasks,
-        )
-        firebaseAuth.currentUser?.email?.let {
-            db.collection("posts")
-                .add(post)
-                .addOnSuccessListener {
-                    Log.d("SavePostActivity", "Post added with ID: ${it.id}")
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error saving post: ${e.message}", Toast.LENGTH_LONG).show()
-                }
+        val userId = firebaseAuth.currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(this, "You must be logged in to post.", Toast.LENGTH_SHORT).show()
+            return
         }
 
-        Toast.makeText(this, "Session posted successfully!", Toast.LENGTH_SHORT).show()
+        // **THE FIX**: Convert the list of TodoItem objects to a list of Strings (titles)
+        val completedTaskTitles = completedTasks.map { it.title }
 
+        val post = Post(
+            // Firestore will generate the ID, we can leave this blank for a new post
+            userId = userId,
+            name = MainActivity.currentUsername,
+            title = binding.sessionTitleLabel.text.toString(), // Or get from an EditText if you add one
+            content = binding.etDescription.text.toString(),
+            date = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date()),
+            durationMillis = this.durationInMillis, // Save the raw milliseconds
+            todoList = completedTaskTitles // Use the converted list of strings
+        )
+
+        firestore.collection("posts")
+            .add(post)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Session posted successfully!", Toast.LENGTH_SHORT).show()
+                navigateToHome()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error saving post: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    private fun navigateToHome() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("NAVIGATE_TO", R.id.nav_home)

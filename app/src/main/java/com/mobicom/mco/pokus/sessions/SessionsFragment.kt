@@ -142,6 +142,7 @@ class SessionsFragment : Fragment() {
 
                 // This line defines the variable 'totalTasksCount'
                 val totalTasksCount = sessionTaskList.size
+                val completedTasks = sessionTaskList.filter { it.isChecked }
 
                 // This code uses the variable to pass data to the next screen
                 val intent = Intent(requireContext(), SaveSessionActivity::class.java).apply {
