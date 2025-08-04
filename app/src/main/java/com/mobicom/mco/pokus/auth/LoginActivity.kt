@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "LoginActivity"
         private const val USER_ID_EXTRA = "USER_ID_EXTRA"
-        private const val USER_EMAIL_EXTRA = "USER_EMAIL_EXTRA" // If you still need to pass email
+        const val USER_EMAIL_EXTRA = "USER_EMAIL_EXTRA" // If you still need to pass email
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -201,25 +201,27 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkUserInFirestore(firebaseUser: FirebaseUser) {
-        val userUid = firebaseUser.uid // Use UID for document ID
+        val userUid = firebaseUser.email // Use UID for document ID
         Log.d(TAG, "Checking Firestore for user document: $userUid")
 
-        firestore.collection("users").document(userUid).get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    Log.d(TAG, "User profile already exists in Firestore for $userUid.")
-                    navigateToMainApp()
-                } else {
-                    Log.d(TAG, "No existing user profile for $userUid. Redirecting to sign up.")
-                    // Pass UID and email to SignUpActivity
-                    navigateToSignUp(userUid, firebaseUser.email)
+        if (userUid != null) {
+            firestore.collection("users").document(userUid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        Log.d(TAG, "User profile already exists in Firestore for $userUid.")
+                        navigateToMainApp()
+                    } else {
+                        Log.d(TAG, "No existing user profile for $userUid. Redirecting to sign up.")
+                        // Pass UID and email to SignUpActivity
+                        navigateToSignUp(userUid, firebaseUser.email)
+                    }
                 }
-            }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Error checking user existence for $userUid", e)
-                showLoading(false)
-                Toast.makeText(this, "Failed to check user data. Try again.", Toast.LENGTH_SHORT).show()
-            }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "Error checking user existence for $userUid", e)
+                    showLoading(false)
+                    Toast.makeText(this, "Failed to check user data. Try again.", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun handleCredentialManagerSignInFailure(e: GetCredentialException) {

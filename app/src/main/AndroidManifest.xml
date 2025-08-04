@@ -25,7 +25,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -36,10 +35,6 @@
             android:name=".MainActivity"
             android:exported="true">  <!-- Or false, depending on your needs -->
         <!-- You might have an <intent-filter> here if it's a launcher activity -->
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
         </activity>
         <activity android:name=".auth.SignUpActivity"
             android:exported="true">

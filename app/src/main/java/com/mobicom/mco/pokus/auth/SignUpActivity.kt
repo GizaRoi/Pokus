@@ -20,7 +20,7 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private var documentIdForUser: String? = null // This will store the email to be used as ID
-    private val passedEmail: String? get() = intent.getStringExtra("USER_EMAIL") // Retrieve email from Intent
+    private val passedEmail: String? get() = intent.getStringExtra(LoginActivity.USER_EMAIL_EXTRA) // Retrieve email from Intent
 
     companion object {
         private const val TAG = "SignUpActivity"
@@ -34,9 +34,6 @@ class SignUpActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-
-        // Retrieve the email from the Intent to be used as the document ID
-        val passedEmail = intent.getStringExtra("USER_EMAIL")
 
         if (!passedEmail.isNullOrEmpty()) {
             documentIdForUser = passedEmail

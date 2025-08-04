@@ -1,6 +1,7 @@
 package com.mobicom.mco.pokus.profile
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.widget.Button
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
 import android.util.Log
+import com.mobicom.mco.pokus.auth.LoginActivity
 
 class EditProfileActivity : AppCompatActivity() {
 
@@ -24,6 +26,7 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var saveBtn: Button
     private lateinit var profileImageView: ImageView // To display the selected drawable
     private lateinit var changeProfilePicTextView: TextView // To trigger the selection
+    private lateinit var logOutBtn: Button
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -51,6 +54,8 @@ class EditProfileActivity : AppCompatActivity() {
         saveBtn = findViewById(R.id.saveBtn)
         profileImageView = findViewById(R.id.profilePic) // Your ImageView for the profile picture
         changeProfilePicTextView = findViewById(R.id.changePhoto) // Your TextView/Button to change PFP
+        logOutBtn = findViewById(R.id.logoutBtn)
+
 
         firebaseAuth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
@@ -73,6 +78,14 @@ class EditProfileActivity : AppCompatActivity() {
             // `selectedDrawableName` will be used if a new icon was chosen,
             // otherwise, the existing one (or default) will be kept or resaved.
             updateUserProfileInFirestore(newName, newBio, newLink, selectedDrawableName)
+        }
+
+        logOutBtn.setOnClickListener {
+            firebaseAuth.signOut()
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+            finish() // Close this activity
+            //Start LoginActivity
+            startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 
@@ -141,6 +154,7 @@ class EditProfileActivity : AppCompatActivity() {
                     profileImageView.setImageResource(getDrawableIdByName(defaultDrawableName))
                 }
             }
+
     }
 
     private fun showAnimalIconSelectionDialog() {
