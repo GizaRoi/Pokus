@@ -17,6 +17,10 @@
         android:theme="@style/Theme.Pokus"
         tools:targetApi="31">
         <activity
+            android:name=".ui.post.SaveSessionActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".auth.LoginActivity"
             android:exported="true">
             <intent-filter>

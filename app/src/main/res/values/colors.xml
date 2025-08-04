@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="pokus_blue">#267FE8</color>
+    <color name="pokus_gray">#424242</color>
 </resources>

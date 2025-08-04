@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.MutableLiveData
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
+import java.util.concurrent.TimeUnit
 
 class TimerService : Service() {
 
@@ -21,6 +22,7 @@ class TimerService : Service() {
     private var countDownTimer: CountDownTimer? = null
     var timeLeftInMillis: Long = POMODORO_DURATION
     var isTimerRunning: Boolean = false
+    private var sessionStartTime: Long = 0L
 
     val timeLeftLiveData = MutableLiveData<Long>()
     val isFinishedLiveData = MutableLiveData<Boolean>()
@@ -48,6 +50,9 @@ class TimerService : Service() {
 
     fun startTimer() {
         if (!isTimerRunning) {
+            if (sessionStartTime == 0L) {
+                sessionStartTime = System.currentTimeMillis()
+            }
             isTimerRunning = true
             isFinishedLiveData.postValue(false)
             startForeground(NOTIFICATION_ID, createNotification("Timer is running..."))
@@ -56,14 +61,13 @@ class TimerService : Service() {
                 override fun onTick(millisUntilFinished: Long) {
                     timeLeftInMillis = millisUntilFinished
                     timeLeftLiveData.postValue(timeLeftInMillis)
-                    // Update notification with current time
                     updateNotification(formatTime(timeLeftInMillis))
                 }
 
                 override fun onFinish() {
                     isTimerRunning = false
                     isFinishedLiveData.postValue(true)
-                    stopForeground(true) // Remove notification when finished
+                    stopForeground(true)
                     resetTimer(POMODORO_DURATION)
                 }
             }.start()
@@ -73,7 +77,7 @@ class TimerService : Service() {
     fun pauseTimer() {
         countDownTimer?.cancel()
         isTimerRunning = false
-        stopForeground(false) // Make notification dismissible
+        stopForeground(false)
     }
 
     fun resetTimer(duration: Long) {
@@ -84,12 +88,26 @@ class TimerService : Service() {
         updateNotification(formatTime(duration))
     }
 
+    // NEW: Method to fully stop and reset the session
+    fun stopAndResetSession() {
+        pauseTimer()
+        sessionStartTime = 0L // Reset the session start time
+        resetTimer(POMODORO_DURATION)
+        stopForeground(true)
+    }
+
+    fun getSessionDuration(): Long {
+        if (sessionStartTime == 0L) return 0L
+        return System.currentTimeMillis() - sessionStartTime
+    }
+
+    // NEW: Public method to check if a session has ever been started
+    fun hasSessionStarted(): Boolean = sessionStartTime > 0L
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
-                CHANNEL_ID,
-                "Timer Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
+                CHANNEL_ID, "Timer Service Channel", NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(serviceChannel)
@@ -99,7 +117,7 @@ class TimerService : Service() {
     private fun createNotification(text: String) = NotificationCompat.Builder(this, CHANNEL_ID)
         .setContentTitle("Pokus Study Session")
         .setContentText(text)
-        .setSmallIcon(R.drawable.sessions) // Replace with your own icon
+        .setSmallIcon(R.drawable.sessions)
         .setContentIntent(PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
         .build()
 
@@ -109,15 +127,14 @@ class TimerService : Service() {
         manager.notify(NOTIFICATION_ID, notification)
     }
 
-    // Helper to format time for notification
     private fun formatTime(millis: Long): String {
-        val minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(millis)
-        val seconds = java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(millis) - java.util.concurrent.TimeUnit.MINUTES.toSeconds(minutes)
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(millis)
+        val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(minutes)
         return String.format("%02d:%02d", minutes, seconds)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        countDownTimer?.cancel() // Clean up timer
+        countDownTimer?.cancel()
     }
 }
