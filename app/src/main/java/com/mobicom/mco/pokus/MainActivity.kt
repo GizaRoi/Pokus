@@ -13,6 +13,7 @@ import com.mobicom.mco.pokus.todo.TodoFragment
 import com.mobicom.mco.pokus.sessions.SessionsFragment
 import com.mobicom.mco.pokus.profile.ProfileFragment
 import com.mobicom.mco.pokus.home.Post
+import com.mobicom.mco.pokus.models.User
 
 
 class MainActivity : AppCompatActivity() {
@@ -34,6 +35,26 @@ class MainActivity : AppCompatActivity() {
         const val KEY_PFP = "pfpURL"
         const val KEY_SCHOOL = "school"
         var posts: ArrayList<Post> = ArrayList()
+
+        fun fetchUserProfileByUsername(username: String, callback: (User?) -> Unit) {
+            val firestore = FirebaseFirestore.getInstance()
+            firestore.collection("users")
+                .whereEqualTo("username", username)
+                .limit(1)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        callback(null) // User not found
+                    } else {
+                        // Convert the document to our User object
+                        val user = documents.documents[0].toObject(User::class.java)
+                        callback(user)
+                    }
+                }
+                .addOnFailureListener {
+                    callback(null) // Handle failure
+                }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,6 +140,25 @@ class MainActivity : AppCompatActivity() {
             }
             .addOnFailureListener { exception ->
                 Log.e("MainActivity", "Error fetching posts: ", exception)
+            }
+    }
+
+    fun fetchPostsForUser(username: String, callback: (ArrayList<Post>) -> Unit) {
+        firestore.collection("posts")
+            .whereEqualTo("name", username) // Query for posts where the 'name' field matches the username
+            .get()
+            .addOnSuccessListener { documents ->
+                val userPosts = ArrayList<Post>()
+                for (doc in documents) {
+                    val post = doc.toObject(Post::class.java)
+                    post.id = doc.id
+                    userPosts.add(post)
+                }
+                callback(userPosts) // Return the list of posts via the callback
+            }
+            .addOnFailureListener { exception ->
+                Log.e("MainActivity", "Error fetching posts for user $username: ", exception)
+                callback(ArrayList()) // Return an empty list on failure
             }
     }
 }

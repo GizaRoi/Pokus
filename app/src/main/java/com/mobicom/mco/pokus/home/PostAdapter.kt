@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
 
-class PostAdapter(private val postList: List<Post>) :
+class PostAdapter(private var postList: List<Post>) :
     RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -88,4 +88,9 @@ class PostAdapter(private val postList: List<Post>) :
     }
 
     override fun getItemCount(): Int = postList.size
+
+    fun updatePosts(newPostList: List<Post>) {
+        postList = newPostList
+        notifyDataSetChanged()
+    }
 }
