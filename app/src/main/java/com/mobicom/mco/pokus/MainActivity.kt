@@ -55,6 +55,26 @@ class MainActivity : AppCompatActivity() {
                     callback(null) // Handle failure
                 }
         }
+
+        fun fetchPostsForUser(username: String, callback: (ArrayList<Post>) -> Unit) {
+            val firestore = FirebaseFirestore.getInstance()
+            firestore.collection("posts")
+                .whereEqualTo("name", username)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val userPosts = ArrayList<Post>()
+                    for (doc in documents) {
+                        val post = doc.toObject(Post::class.java)
+                        post.id = doc.id
+                        userPosts.add(post)
+                    }
+                    callback(userPosts) // Return the list via the callback
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("MainActivity", "Error fetching posts for user $username: ", exception)
+                    callback(ArrayList()) // Return empty list on failure
+                }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -143,22 +163,22 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    fun fetchPostsForUser(username: String, callback: (ArrayList<Post>) -> Unit) {
-        firestore.collection("posts")
-            .whereEqualTo("name", username) // Query for posts where the 'name' field matches the username
-            .get()
-            .addOnSuccessListener { documents ->
-                val userPosts = ArrayList<Post>()
-                for (doc in documents) {
-                    val post = doc.toObject(Post::class.java)
-                    post.id = doc.id
-                    userPosts.add(post)
-                }
-                callback(userPosts) // Return the list of posts via the callback
-            }
-            .addOnFailureListener { exception ->
-                Log.e("MainActivity", "Error fetching posts for user $username: ", exception)
-                callback(ArrayList()) // Return an empty list on failure
-            }
-    }
+//    fun fetchPostsForUser(username: String, callback: (ArrayList<Post>) -> Unit) {
+//        firestore.collection("posts")
+//            .whereEqualTo("name", username) // Query for posts where the 'name' field matches the username
+//            .get()
+//            .addOnSuccessListener { documents ->
+//                val userPosts = ArrayList<Post>()
+//                for (doc in documents) {
+//                    val post = doc.toObject(Post::class.java)
+//                    post.id = doc.id
+//                    userPosts.add(post)
+//                }
+//                callback(userPosts) // Return the list of posts via the callback
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.e("MainActivity", "Error fetching posts for user $username: ", exception)
+//                callback(ArrayList()) // Return an empty list on failure
+//            }
+//    }
 }

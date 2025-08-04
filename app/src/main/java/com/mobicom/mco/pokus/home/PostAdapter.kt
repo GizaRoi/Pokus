@@ -93,4 +93,5 @@ class PostAdapter(private var postList: List<Post>) :
         postList = newPostList
         notifyDataSetChanged()
     }
+
 }

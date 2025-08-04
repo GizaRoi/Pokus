@@ -42,7 +42,7 @@ class ProfileFragment : Fragment() {
         postsRecyclerView.adapter = postAdapter
 
         // Fetch this user's posts from Firestore
-        loadUserPosts()
+        loadUserPosts(MainActivity.currentUsername)
 
         view.findViewById<ImageView>(R.id.settingsIcon).setOnClickListener {
             val intent = Intent(requireContext(), EditProfileActivity::class.java)
@@ -50,11 +50,9 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun loadUserPosts() {
-        // Get reference to MainActivity to call the fetch function
-        val mainActivity = activity as? MainActivity
-        mainActivity?.fetchPostsForUser(MainActivity.currentUsername) { userPosts ->
-            // This is the callback. When the posts are fetched, update the adapter.
+    private fun loadUserPosts(username: String) {
+        MainActivity.fetchPostsForUser(username) { userPosts ->
+            // When the posts are fetched, update the adapter.
             postAdapter.updatePosts(userPosts)
         }
     }

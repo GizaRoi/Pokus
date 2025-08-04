@@ -6,32 +6,43 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
 import com.mobicom.mco.pokus.models.User
+import com.mobicom.mco.pokus.home.PostAdapter
 
 class UserProfile : AppCompatActivity() {
 
+    private lateinit var postsRecyclerView: RecyclerView
+    private lateinit var postAdapter: PostAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // **THE FIX**: Change this line to use the correct layout
         setContentView(R.layout.activity_user)
 
-        val backIcon: ImageView = findViewById(R.id.backIcon)
-        backIcon.setOnClickListener {
+        findViewById<ImageView>(R.id.backIcon).setOnClickListener {
             finish()
         }
 
-        // Get the username passed from the search screen
+        // Set up RecyclerView
+        postsRecyclerView = findViewById(R.id.postsRecyclerView)
+        postAdapter = PostAdapter(emptyList())
+        postsRecyclerView.layoutManager = LinearLayoutManager(this)
+        postsRecyclerView.adapter = postAdapter
+
         val usernameToShow = intent.getStringExtra("USERNAME")
 
         if (usernameToShow != null) {
-            // Call the new function in MainActivity to fetch this specific user's data
+            // Fetch this specific user's profile info and posts
             MainActivity.fetchUserProfileByUsername(usernameToShow) { user ->
                 if (user != null) {
-                    // If the user is found, populate the UI
                     populateUi(user)
+                    // After populating profile, load their posts
+                    loadUserPosts(user.username)
                 } else {
-                    // Handle case where user is not found
                     Toast.makeText(this, "User '$usernameToShow' not found.", Toast.LENGTH_LONG).show()
                     finish()
                 }
@@ -42,18 +53,16 @@ class UserProfile : AppCompatActivity() {
         }
     }
 
+    private fun loadUserPosts(username: String) {
+        MainActivity.fetchPostsForUser(username) { userPosts ->
+            postAdapter.updatePosts(userPosts)
+        }
+    }
+
     private fun populateUi(user: User) {
-        val usernameText: TextView = findViewById(R.id.username)
-        val bioText: TextView = findViewById(R.id.userBio)
-        val linkText: TextView = findViewById(R.id.userLink)
-        // Note: The User model and UI for stats (sessions, followers) will need to be updated
-        // to show real data, but this sets up the main profile info.
-
-        usernameText.text = user.username
-        bioText.text = user.bio
-        linkText.text = user.links
-
-        // You would add logic here to load the profile picture from user.pfpURL
-        // using an image loading library like Glide or Picasso.
+        findViewById<TextView>(R.id.username).text = user.username
+        findViewById<TextView>(R.id.userBio).text = user.bio
+        findViewById<TextView>(R.id.userLink).text = user.links
+        // You would update the other UI elements (followers, etc.) here
     }
 }
