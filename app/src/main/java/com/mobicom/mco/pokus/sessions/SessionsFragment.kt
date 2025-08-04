@@ -148,6 +148,7 @@ class SessionsFragment : Fragment() {
                     putExtra("SESSION_DURATION", durationInMillis)
                     putExtra("TASKS_DONE_COUNT", tasksDoneCount)
                     putExtra("TOTAL_TASKS_COUNT", totalTasksCount)
+                    putParcelableArrayListExtra("COMPLETED_TASKS_LIST", ArrayList(completedTasks))
                 }
                 startActivity(intent)
 
