@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
 import com.mobicom.mco.pokus.databinding.ActivitySaveSessionBinding
+import com.mobicom.mco.pokus.todo.TodoItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -16,6 +17,8 @@ import java.util.concurrent.TimeUnit
 class SaveSessionActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySaveSessionBinding
+    // Variable to hold the list of completed tasks
+    private lateinit var completedTasks: ArrayList<TodoItem>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +29,8 @@ class SaveSessionActivity : AppCompatActivity() {
         val durationInMillis = intent.getLongExtra("SESSION_DURATION", 0L)
         val tasksDoneCount = intent.getIntExtra("TASKS_DONE_COUNT", 0)
         val totalTasksCount = intent.getIntExtra("TOTAL_TASKS_COUNT", 0)
+        // Retrieve the ArrayList of completed tasks
+        completedTasks = intent.getParcelableArrayListExtra("COMPLETED_TASKS_LIST") ?: arrayListOf()
 
         // Display the data
         binding.tvDuration.text = "${formatDuration(durationInMillis)}\nDuration"
@@ -41,32 +46,28 @@ class SaveSessionActivity : AppCompatActivity() {
         visibilityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerVisibility.adapter = visibilityAdapter
 
-        // Set listener for the back button on the toolbar
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
 
-        // Set listener for the Discard button
         binding.btnDiscard.setOnClickListener {
-            finish() // Simply close the activity
+            finish()
         }
 
-        // Set listener for the "Post" button
         binding.btnSavePost.setOnClickListener {
-            // Backend developer will replace this with Firebase logic
             savePostToFirebase()
         }
     }
 
     private fun savePostToFirebase() {
-        // --- THIS IS WHERE THE BACKEND LOGIC WILL GO ---
-        // For now, we will simulate a successful post for the UI.
+        // Your backend developer can now access the 'completedTasks' ArrayList here.
+        // For example:
+        // val tasksToSave = completedTasks.map { it.title }
+        // firebase.save(tasksToSave)
 
         Toast.makeText(this, "Session posted successfully!", Toast.LENGTH_SHORT).show()
 
-        // Navigate back to MainActivity and show the HomeFragment
         val intent = Intent(this, MainActivity::class.java).apply {
-            // These flags clear the activity stack and bring MainActivity to the front
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra("NAVIGATE_TO", R.id.nav_home)
         }
