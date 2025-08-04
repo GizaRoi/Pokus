@@ -67,12 +67,12 @@ class SaveSessionActivity : AppCompatActivity() {
 
         val post = Post(
             // Firestore will generate the ID, we can leave this blank for a new post
-            userId = userId,
+            email = firebaseAuth.currentUser?.email ?: "",
+            timeSpent = formatDuration(durationInMillis),
             name = MainActivity.currentUsername,
             title = binding.sessionTitleLabel.text.toString(), // Or get from an EditText if you add one
             content = binding.etDescription.text.toString(),
             date = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(Date()),
-            durationMillis = this.durationInMillis, // Save the raw milliseconds
             todoList = completedTaskTitles // Use the converted list of strings
         )
 

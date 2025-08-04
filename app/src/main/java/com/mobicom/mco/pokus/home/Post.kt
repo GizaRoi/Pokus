@@ -16,7 +16,8 @@ data class Post(
     val durationMillis: Long = 0L, // Storing duration as milliseconds
     val likes: Int = 0,
     val todoList: List<String> = emptyList(), // Storing only the titles as Strings
-    var isLiked: Boolean = false
+    var isLiked: Boolean = false,
+    var comment: ArrayList<Comment> = ArrayList()
 )
 
 data class Comment(

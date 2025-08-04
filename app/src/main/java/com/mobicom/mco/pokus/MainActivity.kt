@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                         email = doc.getString("email") ?: "unknown",
                         likes = doc.getLong("likes")?.toInt() ?: 0,
                         content = doc.getString("content") ?: "",
-                        name = doc.getString("author") ?: "",
+                        name = doc.getString("name") ?: "",
                         timeSpent = doc.getString("timeSpent") ?: "0m",
                         date = doc.getString("date") ?: "",
                         todoList = doc.get("todoList") as? ArrayList<String> ?: ArrayList(),

@@ -41,19 +41,14 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
         </activity>
-        <!-- <activity android:name=".auth.SignUpActivity"
-            android:exported="true">-->
-            <!-- Optional: Add intent filters if needed -->
-        <!--</activity>-->
+        <activity android:name=".auth.SignUpActivity"
+            android:exported="true">
+        </activity>
 
         <activity android:name=".profile.SettingsActivity" />
         <activity android:name=".profile.PrivacyPolicy" />
         <activity android:name=".profile.TermsConditions" />
         <activity android:name=".search.UserProfile" />
-
-        <activity
-            android:name=".auth.SignUpActivity"
-            android:exported="false" />
 
         <service
             android:name=".services.TimerService"

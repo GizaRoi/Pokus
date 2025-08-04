@@ -47,7 +47,7 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
+                    <EditText
                         android:id="@+id/session_title_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
