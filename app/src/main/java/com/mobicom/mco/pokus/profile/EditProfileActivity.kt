@@ -118,7 +118,6 @@ class EditProfileActivity : AppCompatActivity() {
                     nameEditText.setText(MainActivity.currentUsername)
                     bioEditText.setText(MainActivity.currentBio)
                     linkEditText.setText(MainActivity.currentLink)
-                    selectedDrawableName = MainActivity.currentProfilePictureUrl ?: defaultDrawableName
                     val drawableId = getDrawableIdByName(selectedDrawableName ?: defaultDrawableName)
                     if (drawableId != 0) {
                         profileImageView.setImageResource(drawableId)
@@ -135,7 +134,6 @@ class EditProfileActivity : AppCompatActivity() {
                 nameEditText.setText(MainActivity.currentUsername)
                 bioEditText.setText(MainActivity.currentBio)
                 linkEditText.setText(MainActivity.currentLink)
-                selectedDrawableName = MainActivity.currentProfilePictureUrl ?: defaultDrawableName
                 val drawableId = getDrawableIdByName(selectedDrawableName ?: defaultDrawableName)
                 if (drawableId != 0) {
                     profileImageView.setImageResource(drawableId)
@@ -188,8 +186,6 @@ class EditProfileActivity : AppCompatActivity() {
         // it might save as null, so ensure loadCurrentProfileData handles null by using default.
         // A better approach might be to ensure pfpDrawableName is always non-null here,
         // defaulting to the current value or defaultDrawableName if no new selection was made.
-        val finalPfpDrawableName = pfpDrawableName ?: (MainActivity.currentProfilePictureUrl ?: defaultDrawableName)
-        userProfileUpdates[FIRESTORE_PFP_FIELD] = finalPfpDrawableName
 
 
         if (!isFinishing && !isDestroyed) {
@@ -205,14 +201,12 @@ class EditProfileActivity : AppCompatActivity() {
                     MainActivity.currentUsername = name
                     MainActivity.currentBio = bio
                     MainActivity.currentLink = link
-                    MainActivity.currentProfilePictureUrl = finalPfpDrawableName // Update local cache
 
                     val prefs = getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
                     prefs.edit().apply {
                         putString(MainActivity.KEY_NAME, name)
                         putString(MainActivity.KEY_BIO, bio)
                         putString(MainActivity.KEY_LINK, link)
-                        putString(MainActivity.KEY_PFP, finalPfpDrawableName) // Save new field
                         apply()
                     }
                     finish()

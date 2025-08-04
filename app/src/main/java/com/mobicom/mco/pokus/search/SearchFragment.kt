@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.mobicom.mco.pokus.MainActivity
 import com.mobicom.mco.pokus.R
 
@@ -21,14 +23,26 @@ class SearchFragment : Fragment() {
     private lateinit var searchResults: RecyclerView
     private lateinit var adapter: UserSearchAdapter
 
-    private val allUsernames = MainActivity.currentUsernames
+    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val allUsernames: MutableList<String> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.activity_search, container, false)
-
+        firestore.collection("users").get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val username = document.getString("username")
+                    if (username != null && username.isNotEmpty()) {
+                        allUsernames.add(username)
+                    }
+                }
+                adapter = UserSearchAdapter(allUsernames)
+                searchResults.adapter = adapter
+            }
         searchInput = view.findViewById(R.id.searchInput)
         cancelButton = view.findViewById(R.id.cancelButton)
         searchResults = view.findViewById(R.id.searchResults)

@@ -1,9 +1,12 @@
 package com.mobicom.mco.pokus
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.mobicom.mco.pokus.databinding.ActivityMainBinding
 import com.mobicom.mco.pokus.home.HomeFragment
 import com.mobicom.mco.pokus.search.SearchFragment
@@ -12,69 +15,26 @@ import com.mobicom.mco.pokus.sessions.SessionsFragment
 import com.mobicom.mco.pokus.profile.ProfileFragment
 import com.mobicom.mco.pokus.home.Post
 import com.mobicom.mco.pokus.todo.TodoItem
+import java.util.Date
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    companion object {
-
-        val todoList = mutableListOf<TodoItem>()
-
+    companion object{
+        lateinit var currentUsername: String
+        lateinit var currentBio: String
+        lateinit var currentLink: String
+        var currentPfp: String = ""
+        lateinit var currentSchool: String
         const val PREFS_NAME = "UserPrefs"
-        const val KEY_NAME = "name"
+        const val KEY_NAME = "username"
         const val KEY_BIO = "bio"
         const val KEY_LINK = "link"
-
-        var currentUsername = "reever"
-        var currentBio: String = "CS student trying to survive finals. Focused on mobile development and AI. Let's get this bread!"
-        var currentLink: String = "instagram.com/roimark"
-
-        val currentDate = "A day ago"
-        val currentTitle = "Welcome Back!"
-        val currentContent = "Your latest updates are shown here."
-        val currentTimeSpent = "1h 40m"
-        val currentTodoList = listOf("✔ Task A", "✔ Task B", "✔ Task C")
-        val currentComments = listOf("You got this!", "Proud of you 💪")
-        val currentCommentUsernames = listOf("peter", "david")
-
-        val currentUsernames = listOf("reever", "peter", "david", "lacson")
-
-        val userStats = mapOf(
-            "reever" to Triple(12, 148, 89),     // sessions, followers, following
-            "peter" to Triple(5, 321, 210),
-            "david" to Triple(7, 200, 123)
-        )
-
-        val userBios = mapOf(
-            "reever" to "CS student trying to survive finals.",
-            "peter" to "Forever budots champion.",
-            "david" to "Aspiring CEO."
-        )
-
-        val userLinks = mapOf(
-            "reever" to "instagram.com/roimark",
-            "peter" to "tiktok.com/@peter",
-            "david" to "facebook.com/david"
-        )
-
-
-        val dummyPost = Post(
-            name = currentUsername,
-            date = currentDate,
-            title = currentTitle,
-            content = currentContent,
-            timeSpent = currentTimeSpent,
-            todoList = currentTodoList,
-            commentUsernames = currentCommentUsernames.toMutableList(),
-            comments = currentComments.toMutableList()
-        )
-
-
-        val dummyPosts = listOf(dummyPost, dummyPost, dummyPost)
-
-
+        var posts: ArrayList<Post> = ArrayList()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +46,10 @@ class MainActivity : AppCompatActivity() {
         currentUsername = prefs.getString(KEY_NAME, currentUsername) ?: currentUsername
         currentBio = prefs.getString(KEY_BIO, currentBio) ?: currentBio
         currentLink = prefs.getString(KEY_LINK, currentLink) ?: currentLink
+        currentPfp = prefs.getString("pfpURL", currentPfp) ?: currentPfp
+        currentSchool = prefs.getString("school", currentSchool) ?: currentSchool
+        fetchUserData()
+        fetchPosts()
 
         // Default fragment* to change later with log in
         loadFragment(HomeFragment())
@@ -107,5 +71,60 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()
+    }
+
+    private fun fetchUserData(){
+        firestore.collection("users")
+            .document(firebaseAuth.currentUser?.email?: "")
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    currentUsername = document.getString("username") ?: currentUsername
+                    currentBio = document.getString("bio") ?: currentBio
+                    currentLink = document.getString("link") ?: currentLink
+                    currentPfp = document.getString("pfpURL") ?: currentPfp
+                    currentSchool = document.getString("school") ?: currentSchool
+
+                    // Save to SharedPreferences
+                    val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                    with(prefs.edit()) {
+                        putString(KEY_NAME, currentUsername)
+                        putString(KEY_BIO, currentBio)
+                        putString(KEY_LINK, currentLink)
+                        putString("pfpURL", currentPfp)
+                        putString("school", currentSchool)
+                        apply()
+                    }
+                }
+            }
+    }
+
+    private fun fetchPosts() {
+        firestore.collection("posts")
+            .get()
+            .addOnSuccessListener { documents ->
+                posts = documents.map { doc ->
+                    Post(
+                        id = doc.id,
+                        title = doc.getString("title") ?: "No Title",
+                        email = doc.getString("email") ?: "unknown",
+                        likes = doc.getLong("likes")?.toInt() ?: 0,
+                        content = doc.getString("content") ?: "",
+                        name = doc.getString("author") ?: "",
+                        timeSpent = doc.getDate("timeSpent").toString(),
+                        date = doc.getDate("date")?.toString() ?: Date().toString(),
+                        todoList = (doc.get("todoList") as? List<Map<String, Any>>)?.map { todoMap ->
+                            TodoItem(
+                                id = todoMap["id"] as Long,
+                                title = todoMap["title"] as String,
+                                isChecked= todoMap["isCompleted"] as Boolean
+                            )
+                        }?.toCollection(ArrayList()) ?: ArrayList(),
+                    )
+                } as ArrayList<Post>
+            }
+            .addOnFailureListener { exception ->
+                Log.e("MainActivity", "Error fetching posts: ", exception)
+            }
     }
 }

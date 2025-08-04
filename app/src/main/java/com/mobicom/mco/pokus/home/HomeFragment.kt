@@ -22,9 +22,7 @@ class HomeFragment : Fragment() {
     ): View {
         _binding = ActivityHomeBinding.inflate(inflater, container, false)
 
-        val dummyPosts = MainActivity.dummyPosts
-
-        adapter = PostAdapter(dummyPosts)
+        adapter = PostAdapter(MainActivity.posts)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter

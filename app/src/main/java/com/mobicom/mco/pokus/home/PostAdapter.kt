@@ -48,11 +48,11 @@ class PostAdapter(private val postList: List<Post>) :
         holder.todo.text = post.todoList.joinToString("\n")
 
         // Format comments with usernames
-        val commentText = post.comments.mapIndexed { i, comment ->
-            val username = post.commentUsernames.getOrNull(i) ?: "user"
-            "$username: $comment"
-        }.joinToString("\n")
-        holder.comments.text = commentText
+//        val commentText = post.comments.mapIndexed { i, comment ->
+//            val username = post.commentUsernames.getOrNull(i) ?: "user"
+//            "$username: $comment"
+//        }.joinToString("\n")
+//        holder.comments.text = commentText
 
         // Like button toggle
         holder.likeButton.setImageResource(
@@ -65,26 +65,26 @@ class PostAdapter(private val postList: List<Post>) :
         }
 
         // Comment input dialog
-        holder.commentButton.setOnClickListener {
-            val context = holder.itemView.context
-            val input = EditText(context)
-            input.inputType = InputType.TYPE_CLASS_TEXT
-            input.hint = "Type your comment..."
-
-            AlertDialog.Builder(context)
-                .setTitle("Add Comment")
-                .setView(input)
-                .setPositiveButton("Post") { _, _ ->
-                    val commentText = input.text.toString().trim()
-                    if (commentText.isNotEmpty()) {
-                        post.comments.add(commentText)
-                        post.commentUsernames.add(MainActivity.currentUsername)
-                        notifyItemChanged(position)
-                    }
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
-        }
+//        holder.commentButton.setOnClickListener {
+//            val context = holder.itemView.context
+//            val input = EditText(context)
+//            input.inputType = InputType.TYPE_CLASS_TEXT
+//            input.hint = "Type your comment..."
+//
+//            AlertDialog.Builder(context)
+//                .setTitle("Add Comment")
+//                .setView(input)
+//                .setPositiveButton("Post") { _, _ ->
+//                    val commentText = input.text.toString().trim()
+//                    if (commentText.isNotEmpty()) {
+//                        post.comments.add(commentText)
+//                        post.commentUsernames.add(MainActivity.currentUsername)
+//                        notifyItemChanged(position)
+//                    }
+//                }
+//                .setNegativeButton("Cancel", null)
+//                .show()
+//        }
     }
 
     override fun getItemCount(): Int = postList.size
